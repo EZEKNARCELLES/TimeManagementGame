@@ -1,1056 +1,1004 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Leadership Challenge: Time is Ticking</title>
-<style>
-  :root{
-    --bg:#0f1220; --panel:#161a2b; --panel-2:#1d2342; --accent:#6dd6ff;
-    --good:#3fd87b; --warn:#ffcc00; --bad:#ff6b6b; --text:#e8ecf8; --muted:#9aa5c1;
-    --white:#fff;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;line-height:1.45}
-  .game-wrap{max-width:960px;margin:0 auto;padding:16px}
-  .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid rgba(255,255,255,.08);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}
-  header.game-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:16px 16px 8px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
-  .title{font-weight:700;font-size:18px;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
-  .title .pulse{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(109,214,255,.15),0 0 12px var(--accent)}
-  .stats{display:flex;gap:12px;flex:1;flex-wrap:wrap}
-  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:8px 10px;min-width:150px}
-  .stat .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-  .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:6px;position:relative}
-  .bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#53ffa8);transition:width .3s}
-  .bar .ticks{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent,transparent 9%,rgba(255,255,255,.07) 10%)}
-  .kpi{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .kpi .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:12px}
-  .kpi b{font-weight:700}
-  .content{padding:16px}
-  .scene{display:grid;grid-template-columns:90px 1fr;gap:14px}
-  .avatar{width:90px;height:90px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:40px}
-  .dialogue{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px}
-  .dialogue .name{font-weight:700;margin-bottom:4px}
-  .choices{display:grid;gap:10px;margin-top:12px}
-  .btn{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:var(--white);padding:12px 14px;border-radius:12px;cursor:pointer;transition:transform .06s,border-color .2s,background .2s}
-  .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.05)}
-  .btn:focus{outline:2px solid var(--accent);outline-offset:2px}
-  .btn .meta{display:flex;gap:8px;font-size:12px;color:var(--muted)}
-  .tag{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:11px}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
-  .feedback{margin-top:12px;background:rgba(109,214,255,.07);border:1px solid rgba(109,214,255,.25);border-radius:10px;padding:10px;display:none}
-  .feedback.show{display:block}
-  .footer{display:flex;justify-content:space-between;align-items:center;padding:12px;border-top:1px solid rgba(255,255,255,.06)}
-  .minor{color:var(--muted);font-size:12px}
-  .alert{border-left:4px solid var(--warn);background:rgba(255,204,0,.08)}
-  .good{border-left:4px solid var(--good);background:rgba(63,216,123,.08)}
-  .bad{border-left:4px solid var(--bad);background:rgba(255,107,107,.08)}
-  .ghost{opacity:.7}
-  .hidden{display:none !important}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPO Leader: Time Management Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  /* Scoreboard */
-  .scoreboard{display:grid;gap:12px}
-  .score-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-  .score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px}
-  .score-card h4{margin:0 0 2px 0;font-size:13px}
-  .score-card .big{font-size:22px;font-weight:800}
-  .badges{display:flex;gap:8px;flex-wrap:wrap}
-  .badge{display:inline-flex;gap:6px;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:6px 10px;border-radius:999px;font-size:12px}
-  .badge .b-ic{font-size:14px}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-  /* KPI explainer */
-  .kpi-explain{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px}
-  .kpi-explain h4{margin:4px 0 8px 0;font-size:14px}
-  .kpi-explain ul{margin:0 0 0 16px;padding:0}
-  .kpi-explain li{margin:6px 0}
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
 
-  /* Countdown */
-  .countdown{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);font-size:12px}
-  .cd-bar{width:120px;height:8px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
-  .cd-fill{height:100%;width:0;background:linear-gradient(90deg,#ff6b6b,#ffcc00,#3fd87b)}
-  .cd-num{min-width:2ch;text-align:right}
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-  /* Mobile */
-  @media (max-width:640px){
-    .scene{grid-template-columns:1fr}
-    .avatar{width:70px;height:70px;font-size:32px}
-  }
-</style>
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .morale-fill { background: linear-gradient(90deg, #28a745, #20c997); }
+        .time-fill { background: linear-gradient(90deg, #ffc107, #fd7e14); }
+        .wellness-fill { background: linear-gradient(90deg, #6f42c1, #e83e8c); }
+        .project-fill { background: linear-gradient(90deg, #007bff, #17a2b8); }
+
+        .scene-container {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .scene-image {
+            text-align: center;
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .scene-title {
+            font-size: 1.8em;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .scene-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #6c757d;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .character-dialogue {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .character-name {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .choice-btn::before {
+            content: '→';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+        }
+
+        .ending-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .ending-grade {
+            text-align: center;
+            font-size: 4em;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feedback-section {
+            margin: 20px 0;
+        }
+
+        .feedback-title {
+            font-size: 1.3em;
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .feedback-list li {
+            margin: 10px 0;
+            color: #6c757d;
+        }
+
+        .feedback-list li::before {
+            content: '✓ ';
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .feedback-list.improvements li::before {
+            content: '• ';
+            color: #ffc107;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+            z-index: 1000;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.positive {
+            border-left: 4px solid #28a745;
+        }
+
+        .notification.negative {
+            border-left: 4px solid #dc3545;
+        }
+
+        .notification.neutral {
+            border-left: 4px solid #ffc107;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .stats-bar {
+                flex-wrap: wrap;
+            }
+            
+            .stat {
+                flex: 1 1 45%;
+                margin-bottom: 10px;
+            }
+
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="game-wrap">
-  <div class="card" role="region" aria-label="Leadership Challenge game">
-    <header class="game-header">
-      <div class="title"><span class="pulse" aria-hidden="true"></span> Leadership Challenge: Time is Ticking</div>
-      <div class="stats">
-        <div class="stat" aria-label="Time remaining">
-          <div class="label">Time Remaining</div>
-          <div class="bar" aria-hidden="true"><div class="fill" id="bar-time"></div><div class="ticks"></div></div>
-          <div class="minor"><span id="time-text">60</span> min</div>
+    <div class="game-container">
+        <div class="header">
+            <h1>🎯 BPO Leader Challenge</h1>
+            <div class="subtitle">Master the Art of Time Management</div>
         </div>
-        <div class="stat" aria-label="Boundary meter">
-          <div class="label">Boundary Meter</div>
-          <div class="bar" aria-hidden="true"><div class="fill" id="bar-boundary" style="background:linear-gradient(90deg,#ff6b6b,#6dd6ff,#3fd87b)"></div></div>
-          <div class="minor">Balance: <span id="boundary-text">Balanced</span></div>
-        </div>
-        <div class="stat" aria-label="Team morale">
-          <div class="label">Team Morale</div>
-          <div class="bar" aria-hidden="true"><div class="fill" id="bar-morale" style="background:linear-gradient(90deg,#ff6b6b,#ffcc00,#3fd87b)"></div></div>
-          <div class="minor">Level: <span id="morale-text">5</span>/10</div>
-        </div>
-      </div>
-      <div class="kpi">
-        <div class="pill">Day <b id="day-num">1</b> • Act <b id="act-num">1</b></div>
-        <div class="pill">Points: <b id="points-num">0</b></div>
-      </div>
-    </header>
 
-    <div class="content" id="content"></div>
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-icon">😊</div>
+                <div class="stat-label">Team Morale</div>
+                <div class="stat-value"><span id="morale">75</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill morale-fill" id="morale-bar" style="width: 75%"></div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-label">Time Left</div>
+                <div class="stat-value"><span id="time">40</span> hrs</div>
+                <div class="progress-bar">
+                    <div class="progress-fill time-fill" id="time-bar" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-icon">🧘</div>
+                <div class="stat-label">Wellness</div>
+                <div class="stat-value"><span id="wellness">70</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill wellness-fill" id="wellness-bar" style="width: 70%"></div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">Projects</div>
+                <div class="stat-value"><span id="project">0</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill project-fill" id="project-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="footer">
-      <div class="minor" id="hint">Every choice costs time. Balance empathy with boundaries.</div>
-      <button class="btn" id="reset-btn" aria-label="Restart day" title="Restart">
-        <span>Restart</span>
-        <span class="meta">Reset</span>
-      </button>
+        <div class="scene-container" id="scene-container">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-(() => {
-  // -----------------------------
-  // CONFIG & STATE
-  // -----------------------------
-  const CONFIG = {
-    startTimeDay1: 60,
-    startTimeDay2: 55,
-    startTimeDay3: 50,
-    startTimeDay4: 45, // Peak Season, tighter time
-    startBoundary: 0,  // -10 over-involved to +10 detached
-    startMorale: 5,    // 0–10
-    act: 1,
-    day: 1
-  };
+    <div class="notification" id="notification">
+        <div id="notification-text"></div>
+    </div>
 
-  const state = {
-    vTime: CONFIG.startTimeDay1,
-    vBoundary: CONFIG.startBoundary,
-    vMorale: CONFIG.startMorale,
-    vPoints: 0,
-    pointsAtActStart: {1:0,2:0,3:0,4:0},
-    flags: {
-      // Act 1
-      alexDone:false, mariaDone:false, jordanDone:false,
-      alexChoice:null, mariaChoice:null, jordanChoice:null,
-      finishedAlexBeforeJordan:false, resolvedJordanFully:false,
+    <script>
+        // Game State
+        const gameState = {
+            currentScene: 'intro',
+            stats: {
+                morale: 75,
+                timeLeft: 40,
+                wellness: 70,
+                projectCompletion: 0
+            },
+            maxTime: 40,
+            decisions: [],
+            characters: {
+                boss: { name: 'Director Martinez', emoji: '👔' },
+                mentor: { name: 'Sarah Chen', emoji: '🧙‍♀️' },
+                employee1: { name: 'Alex Thompson', emoji: '👨‍💻', morale: 70 },
+                employee2: { name: 'Maya Patel', emoji: '👩‍💼', morale: 75 },
+                employee3: { name: 'James Wilson', emoji: '🧑‍💻', morale: 65 }
+            }
+        };
 
-      // Act 2
-      alex2Done:false, maria2Done:false, jordan2Done:false, leaderTaskDone:false,
-      act2IntroApplied:false,
+        // Scenes Database
+        const scenes = {
+            intro: {
+                title: "Welcome to Your First Week as Team Lead!",
+                image: "🏢",
+                description: "You've just been promoted to Team Lead at GlobalTech BPO. Your team handles customer service for multiple international clients. It's Monday morning, and you have a challenging week ahead with a major project deadline on Friday.",
+                dialogue: {
+                    character: 'mentor',
+                    text: "Congratulations on your promotion! Remember, effective leadership is about balancing team needs, project demands, and your own well-being. Make wise choices!"
+                },
+                choices: [
+                    {
+                        text: "Start with a team meeting to set expectations",
+                        next: 'teamMeeting',
+                        effects: { timeLeft: -2, morale: 5, wellness: 0, projectCompletion: 10 }
+                    },
+                    {
+                        text: "Jump straight into work to maximize productivity",
+                        next: 'straightToWork',
+                        effects: { timeLeft: -1, morale: -5, wellness: -5, projectCompletion: 15 }
+                    },
+                    {
+                        text: "Review emails and plan your week first",
+                        next: 'planning',
+                        effects: { timeLeft: -1, morale: 0, wellness: 5, projectCompletion: 5 }
+                    }
+                ]
+            },
 
-      // Timers
-      timeouts:0,
+            teamMeeting: {
+                title: "Team Meeting in Progress",
+                image: "👥",
+                description: "You've gathered your team for a morning meeting. The atmosphere is positive, and everyone seems engaged.",
+                dialogue: {
+                    character: 'employee1',
+                    text: "Thanks for bringing us together! I have some concerns about the project timeline, but I'm ready to give my best."
+                },
+                choices: [
+                    {
+                        text: "Address concerns and create a detailed task distribution",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -3, morale: 10, wellness: 0, projectCompletion: 15 }
+                    },
+                    {
+                        text: "Keep it brief and assign tasks quickly",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -1, morale: 3, wellness: 0, projectCompletion: 10 }
+                    },
+                    {
+                        text: "Turn it into a brainstorming session",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -2, morale: 7, wellness: -3, projectCompletion: 8 }
+                    }
+                ]
+            },
 
-      // Act 3
-      act3ClashChoice:null,
-      handledSecondIssue:false,
+            straightToWork: {
+                title: "Diving Into the Deep End",
+                image: "💻",
+                description: "You've jumped straight into work. Your team seems confused about priorities, but work is getting done.",
+                dialogue: {
+                    character: 'employee2',
+                    text: "I'm not sure what to prioritize. Should I focus on the urgent tickets or the project deliverables?"
+                },
+                choices: [
+                    {
+                        text: "Take time to clarify priorities now",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -2, morale: 8, wellness: 0, projectCompletion: 12 }
+                    },
+                    {
+                        text: "Tell them to focus on the project only",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -1, morale: -3, wellness: -5, projectCompletion: 18 }
+                    },
+                    {
+                        text: "Let them decide based on their judgment",
+                        next: 'crisisCall',
+                        effects: { timeLeft: 0, morale: 2, wellness: 3, projectCompletion: 8 }
+                    }
+                ]
+            },
 
-      // Act 4 (Peak Season)
-      peakOutageDone:false,
-      peakCoverageDone:false,
-      peakQualityDone:false,
-      peakPeopleDone:false,
-      peakLateDone:false,
-      peakPractice:false, // true if started without unlock
+            planning: {
+                title: "Strategic Planning Session",
+                image: "📋",
+                description: "You're reviewing the week's requirements. You notice several conflicting priorities and tight deadlines.",
+                dialogue: {
+                    character: 'boss',
+                    text: "I see you're taking a strategic approach. Good! Remember, the client presentation on Friday is critical."
+                },
+                choices: [
+                    {
+                        text: "Create a detailed project plan and share with team",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -2, morale: 5, wellness: 5, projectCompletion: 20 }
+                    },
+                    {
+                        text: "Delegate planning to senior team members",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -1, morale: 3, wellness: 8, projectCompletion: 12 }
+                    },
+                    {
+                        text: "Focus only on the critical Friday deadline",
+                        next: 'crisisCall',
+                        effects: { timeLeft: -1, morale: -2, wellness: -3, projectCompletion: 15 }
+                    }
+                ]
+            },
 
-      // Progression
-      trustedLeader:false
-    },
-    history:[]
-  };
+            crisisCall: {
+                title: "Urgent Client Escalation!",
+                image: "📞",
+                description: "Tuesday morning: A major client is furious about service delays. They're threatening to cancel their contract. Your boss wants immediate action.",
+                dialogue: {
+                    character: 'boss',
+                    text: "We have a crisis! The client wants answers NOW. This could affect our entire quarter. What's your plan?"
+                },
+                choices: [
+                    {
+                        text: "Drop everything and handle it personally",
+                        next: 'midweekCheck',
+                        effects: { timeLeft: -5, morale: -10, wellness: -15, projectCompletion: -5 }
+                    },
+                    {
+                        text: "Delegate to your best performer while you supervise",
+                        next: 'midweekCheck',
+                        effects: { timeLeft: -3, morale: -5, wellness: -5, projectCompletion: 5 }
+                    },
+                    {
+                        text: "Form a crisis team and rotate responsibilities",
+                        next: 'midweekCheck',
+                        effects: { timeLeft: -3, morale: 5, wellness: 0, projectCompletion: 3 }
+                    },
+                    {
+                        text: "Set boundaries: Schedule a call within 2 hours after prep",
+                        next: 'midweekCheck',
+                        effects: { timeLeft: -2, morale: 3, wellness: 10, projectCompletion: 2 }
+                    }
+                ]
+            },
 
-  // Helper
-  const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+            midweekCheck: {
+                title: "Wednesday: Mid-Week Reality Check",
+                image: "📊",
+                description: "It's Wednesday afternoon. The project is behind schedule, and your team is showing signs of stress. Two team members have requested time off for personal matters.",
+                dialogue: {
+                    character: 'employee3',
+                    text: "Boss, I hate to ask, but I really need Friday afternoon off for a family emergency. I know the deadline is tight..."
+                },
+                choices: [
+                    {
+                        text: "Deny all time off until after the deadline",
+                        next: 'overtimeDecision',
+                        effects: { timeLeft: 0, morale: -20, wellness: -10, projectCompletion: 10 }
+                    },
+                    {
+                        text: "Approve requests but ask for overtime from others",
+                        next: 'overtimeDecision',
+                        effects: { timeLeft: -2, morale: 5, wellness: -10, projectCompletion: 5 }
+                    },
+                    {
+                        text: "Approve one request, work with team to cover",
+                        next: 'overtimeDecision',
+                        effects: { timeLeft: -3, morale: 10, wellness: 5, projectCompletion: 8 }
+                    },
+                    {
+                        text: "Call your mentor for advice first",
+                        next: 'mentorAdvice',
+                        effects: { timeLeft: -1, morale: 3, wellness: 8, projectCompletion: 5 }
+                    }
+                ]
+            },
 
-  // -----------------------------
-  // SCENES
-  // -----------------------------
-  const SCENES = {
-    // =======================
-    // ACT 1 (Day 1)
-    // =======================
-    intro: {
-      id:'intro',
-      type:'dialogue',
-      character:'Mentor',
-      avatar:'🧭',
-      text:`Welcome! It’s your first day as Team Leader. You’ve got 60 minutes to keep the team on track. 
-            Choose wisely — every minute counts. Ready?`,
-      choices:[
-        { id:'start-day', label:'Start Day 1', time:0, deltas:{}, feedback:'Let’s go. Keep an eye on your time, morale, and boundaries.', tone:'good', next:'alex-1' }
-      ]
-    },
+            mentorAdvice: {
+                title: "Wisdom from Your Mentor",
+                image: "🧙‍♀️",
+                description: "You've reached out to Sarah, your mentor, for guidance on balancing team needs with project demands.",
+                dialogue: {
+                    character: 'mentor',
+                    text: "Remember, burning out your team for one deadline will cost you in the long run. But you also need to deliver. Consider what's truly critical versus what's perfectionism. What really needs to be in the Friday presentation?"
+                },
+                choices: [
+                    {
+                        text: "Reduce project scope to essentials only",
+                        next: 'overtimeDecision',
+                        effects: { timeLeft: -2, morale: 15, wellness: 10, projectCompletion: 15 }
+                    },
+                    {
+                        text: "Keep full scope but redistribute work smartly",
+                        next: 'overtimeDecision',
+                        effects: { timeLeft: -3, morale: 5, wellness: 0, projectCompletion: 10 }
+                    },
+                    {
+                        text: "Request deadline extension from your boss",
+                        next: 'extensionRequest',
+                        effects: { timeLeft: -1, morale: 8, wellness: 15, projectCompletion: -10 }
+                    }
+                ]
+            },
 
-    // Alex - Underperformer
-    'alex-1': {
-      id:'alex-1', type:'dialogue', character:'Alex Reyes — Underperformer', avatar:'🧑‍💻',
-      text: pick([
-        `Hey, I’ve been making mistakes on my tickets and I don’t know why.`,
-        `I’m missing SLAs lately and not sure what’s going wrong.`,
-        `My last few calls had errors logged. I could use some help.`
-      ]),
-      choices:[
-        { id:'alex-quick', label:'Quick Feedback', time:5, deltas:{ morale:+1, boundary:+0, points:+5 }, feedback:`You addressed it quickly but didn’t find root causes.`, tone:'alert', after: () => { flag('alexChoice','quick'); flag('alexDone',true); }, next:'alert-jordan-1' },
-        { id:'alex-coach', label:'Full Coaching Conversation (5 steps)', time:15, deltas:{ morale:+3, boundary:+0, points:+12 }, feedback:`Great! You used Observe → Ask → Agree → Plan → Follow-up. Performance improves.`, tone:'good', after: () => { flag('alexChoice','coach'); flag('alexDone',true); }, next:'alert-jordan-1' },
-        { id:'alex-delay', label:'Delay / Delegate', time:2, deltas:{ morale:-1, boundary:+0, points:+2 }, feedback:`Delegating saved time, but unresolved issues can escalate.`, tone:'alert', after: () => { flag('alexChoice','delay'); flag('alexDone',true); }, next:'alert-jordan-1' }
-      ]
-    },
+            extensionRequest: {
+                title: "Negotiating with Leadership",
+                image: "🤝",
+                description: "You're in your boss's office, requesting a deadline extension. The atmosphere is tense.",
+                dialogue: {
+                    character: 'boss',
+                    text: "An extension? This is a critical client! But... I appreciate you coming to me early rather than failing at the last minute. If you can guarantee exceptional quality with 2 extra days, I might consider it."
+                },
+                choices: [
+                    {
+                        text: "Accept the 2-day extension and commit to excellence",
+                        next: 'finalPush',
+                        effects: { timeLeft: 0, morale: 20, wellness: 20, projectCompletion: 25 }
+                    },
+                    {
+                        text: "Decline and push through with original deadline",
+                        next: 'overtimeDecision',
+                        effects: { timeLeft: 0, morale: -5, wellness: -10, projectCompletion: 15 }
+                    }
+                ]
+            },
 
-    'alert-jordan-1': {
-      id:'alert-jordan-1', type:'alert', character:'System Alert', avatar:'⚠️',
-      text:`Jordan is in conflict with a teammate — escalation likely within 10 minutes.`,
-      choices:[
-        { id:'finish-alex-first', label:'Finish with Alex first', time:5, deltas:{ morale:+1, boundary:+0, points:+4 }, feedback:`You wrapped up with Alex. Jordan’s conflict simmers.`, tone:'alert', after: () => flag('finishedAlexBeforeJordan', true), next:'maria-1' },
-        { id:'pause-alex', label:'Pause Alex and address Jordan soon', time:0, deltas:{ morale:-1, boundary:+0, points:+2 }, feedback:`Alex felt cut short, but you’re ready to pivot quickly.`, tone:'alert', after: () => flag('finishedAlexBeforeJordan', false), next:'maria-1' }
-      ]
-    },
+            overtimeDecision: {
+                title: "Thursday: The Overtime Dilemma",
+                image: "🌙",
+                description: "It's Thursday evening. The project needs more work, and you're considering asking the team to stay late or work from home tonight.",
+                dialogue: {
+                    character: 'employee1',
+                    text: "I can stay if needed, but I've already worked late twice this week. My family is starting to complain..."
+                },
+                choices: [
+                    {
+                        text: "Mandatory overtime for everyone",
+                        next: 'finalPush',
+                        effects: { timeLeft: -8, morale: -25, wellness: -20, projectCompletion: 30 }
+                    },
+                    {
+                        text: "Make overtime voluntary with incentives",
+                        next: 'finalPush',
+                        effects: { timeLeft: -6, morale: 5, wellness: -5, projectCompletion: 20 }
+                    },
+                    {
+                        text: "Work late yourself to cover the gap",
+                        next: 'finalPush',
+                        effects: { timeLeft: -10, morale: 10, wellness: -30, projectCompletion: 15 }
+                    },
+                    {
+                        text: "Optimize what you have and avoid overtime",
+                        next: 'finalPush',
+                        effects: { timeLeft: -2, morale: 15, wellness: 15, projectCompletion: 10 }
+                    }
+                ]
+            },
 
-    // Maria - Personal crisis
-    'maria-1': {
-      id:'maria-1', type:'dialogue', character:'Maria Santos — Personal Crisis', avatar:'🧑‍🍼',
-      text:`I’m really struggling with family issues… I don’t know if I can handle work this week.`,
-      choices:[
-        { id:'maria-listen', label:'Listen extensively + personal advice', time:15, deltas:{ morale:+2, boundary:-3, points:+5 }, feedback:`Maria feels supported, but time drains your ability to manage the team.`, tone:'alert', after: () => { flag('mariaChoice','listen'); flag('mariaDone',true); }, next:'alert-jordan-2' },
-        { id:'maria-refer', label:'Empathize + Refer to HR/EAP', time:5, deltas:{ morale:+2, boundary:+0, points:+12 }, feedback:`Excellent. You balanced empathy with boundaries and ensured help.`, tone:'good', after: () => { flag('mariaChoice','refer'); flag('mariaDone',true); }, next:'alert-jordan-2' },
-        { id:'maria-postpone', label:'Brief acknowledge, postpone', time:2, deltas:{ morale:-1, boundary:+0, points:+2 }, feedback:`Saves time, but Maria feels brushed off.`, tone:'alert', after: () => { flag('mariaChoice','postpone'); flag('mariaDone',true); }, next:'alert-jordan-2' }
-      ]
-    },
+            finalPush: {
+                title: "Friday: The Final Push",
+                image: "🏁",
+                description: "It's Friday morning. The presentation is at 3 PM. Your team is gathered, ready for the final push. The atmosphere is tense but determined.",
+                dialogue: {
+                    character: 'employee2',
+                    text: "We're almost there! Just need to finalize the presentation deck and run through the demo one more time. How do you want to handle this?"
+                },
+                choices: [
+                    {
+                        text: "All hands on deck - everyone contributes",
+                        next: 'presentation',
+                        effects: { timeLeft: -4, morale: 10, wellness: 0, projectCompletion: 20 }
+                    },
+                    {
+                        text: "Assign specific roles and trust your team",
+                        next: 'presentation',
+                        effects: { timeLeft: -3, morale: 15, wellness: 10, projectCompletion: 18 }
+                    },
+                    {
+                        text: "Take control and perfect everything yourself",
+                        next: 'presentation',
+                        effects: { timeLeft: -6, morale: -10, wellness: -15, projectCompletion: 15 }
+                    },
+                    {
+                        text: "Do a quick review and call it done",
+                        next: 'presentation',
+                        effects: { timeLeft: -1, morale: 5, wellness: 5, projectCompletion: 8 }
+                    }
+                ]
+            },
 
-    'alert-jordan-2': {
-      id:'alert-jordan-2', type:'alert', character:'System Alert', avatar:'⚠️',
-      text:`Jordan is raising his voice — conflict is spreading to the team.`,
-      choices:[
-        { id:'finish-maria', label:'Finish with Maria first', time:3, deltas:{}, feedback:`You wrapped up with Maria. Jordan’s conflict is hotter now.`, tone:'alert', next:'jordan-1' },
-        { id:'go-to-jordan', label:'Address Jordan now', time:0, deltas:{ points:+3 }, feedback:`You head over to Jordan to prevent further spread.`, tone:'good', next:'jordan-1' }
-      ]
-    },
+            presentation: {
+                title: "The Big Presentation",
+                image: "🎯",
+                description: "You're in the conference room with the client on video call. Your team is behind you, and your boss is watching from the corner. This is your moment.",
+                dialogue: {
+                    character: 'boss',
+                    text: "The client is ready. Show them what your team has accomplished this week."
+                },
+                choices: [
+                    {
+                        text: "Lead the presentation yourself",
+                        next: 'ending',
+                        effects: { timeLeft: -2, morale: -5, wellness: -5, projectCompletion: 5 }
+                    },
+                    {
+                        text: "Share the spotlight with your team",
+                        next: 'ending',
+                        effects: { timeLeft: -2, morale: 20, wellness: 10, projectCompletion: 10 }
+                    },
+                    {
+                        text: "Let your top performer take the lead",
+                        next: 'ending',
+                        effects: { timeLeft: -2, morale: 10, wellness: 5, projectCompletion: 5 }
+                    }
+                ]
+            },
 
-    'jordan-1': {
-      id:'jordan-1', type:'dialogue', character:'Jordan Cruz — Conflict Starter', avatar:'🗣️',
-      text: pick([
-        `I can’t believe my teammates messed up the client report again. Nobody notices!`,
-        `This process is broken and I’m the only one who cares!`,
-        `I’m tired of covering for others. When will leadership step in?`
-      ]),
-      choices:[
-        { id:'jordan-direct', label:'Direct confrontation — “Calm down and be professional.”', time:5, deltas:{ morale:-1, boundary:+0, points:+4 }, feedback:`Firm, but harsh. Jordan may comply, morale dips.`, tone:'alert', after: () => { flag('jordanChoice','direct'); flag('jordanDone',true); }, next:'client-alert' },
-        { id:'jordan-empathy', label:'Empathize + Guide to a constructive plan', time:10, deltas:{ morale:+2, boundary:+1, points:+12 }, feedback:`Well done! You de-escalated and preserved morale.`, tone:'good', after: () => { flag('jordanChoice','empathy'); flag('jordanDone',true); }, next:'client-alert' },
-        { id:'jordan-delay', label:'Delay / Delegate for later', time:2, deltas:{ morale:-1, boundary:+0, points:+2 }, feedback:`Delaying reduces time pressure now, but conflict may spread.`, tone:'alert', after: () => { flag('jordanChoice','delay'); flag('jordanDone',true); }, next:'client-alert' }
-      ]
-    },
+            ending: {
+                title: "Week in Review: Your Leadership Report",
+                image: "🏆",
+                description: "The week is over. Let's see how you performed as a leader.",
+                isEnding: true
+            }
+        };
 
-    'client-alert': {
-      id:'client-alert', type:'alert', character:'System Alert', avatar:'📣',
-      text:`Client escalations incoming — prioritize wisely.`,
-      choices:[
-        { id:'resolve-jordan-fully', label:'Resolve Jordan fully (longer now, fewer fires later)', time:6, deltas:{ morale:+1, points:+6 }, feedback:`Proactive intervention often saves time later.`, tone:'good', after: () => flag('resolvedJordanFully',true), next:'act1-score' },
-        { id:'focus-client', label:'Focus on client tasks (short-term win)', time:3, deltas:{}, feedback:`You handled the client need, but conflict might resurface.`, tone:'alert', after: () => flag('resolvedJordanFully',false), next:'act1-score' }
-      ]
-    },
-
-    // End of Day 1 Score
-    'act1-score': {
-      id:'act1-score', type:'score', phase:'act1', character:'The Boss', avatar:'👔',
-      text:`Let’s review your first day. Your decisions shaped performance, morale, and boundaries.`
-    },
-
-    // =======================
-    // ACT 2 (Day 2)
-    // =======================
-    'act2-intro': {
-      id:'act2-intro', type:'dialogue', character:'Mentor', avatar:'🧭',
-      text:`Mid-week. Unresolved issues from Day 1 are back with higher stakes — and leadership just dropped a priority task on you. You can’t do everything, but your choices will determine the team’s success.`,
-      onEnter: () => {
-        setDayAct(2, 2, CONFIG.startTimeDay2);
-        if(!state.flags.act2IntroApplied){
-          state.flags.act2IntroApplied = true;
-          if(state.flags.alexChoice !== 'coach'){ adjust({time: -3, morale: -1}); }
-          if(state.flags.mariaChoice !== 'refer'){ adjust({morale: -1}); }
-          if(state.flags.jordanChoice !== 'empathy'){ adjust({morale: -1}); }
+        // Notification system
+        function showNotification(message, type = 'neutral') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
-      },
-      choices:[
-        { id:'open-hub', label:'Open Mid-Week Dashboard', time:0, deltas:{}, feedback:'Multiple fires active. Prioritize under pressure.', tone:'alert', next:'act2-hub' }
-      ]
-    },
 
-    'act2-hub': {
-      id:'act2-hub', type:'dialogue', character:'System', avatar:'🗂️',
-      text:`Fires are active: client satisfaction risk, peer conflict spreading, personal issues affecting attendance, and a leadership priority task.`,
-      onEnter: () => buildAct2HubChoices()
-    },
-
-    'act2-leader-task': {
-      id:'act2-leader-task', type:'alert', character:'Leadership Task', avatar:'📝',
-      text:`Leadership needs a client update with corrective actions. Decide quickly.`,
-      timer:{ seconds:10, timeoutChoiceId:'leader-timeout' },
-      choices:[
-        { id:'leader-now', label:'Do it now (thorough update)', time:10, deltas:{ points:+12 }, feedback:`Solid. You delivered a thorough update on time.`, tone:'good', after:()=>flag('leaderTaskDone',true), next:'act2-hub' },
-        { id:'leader-later', label:'Timebox now, schedule deeper work later', time:2, deltas:{ points:+6 }, feedback:`You protected time now and booked a follow-up block.`, tone:'alert', after:()=>flag('leaderTaskDone',true), next:'act2-hub' },
-        { id:'leader-delegate', label:'Delegate to senior agent (review later)', time:5, deltas:{ morale:-1, points:+5 }, feedback:`Task moves forward, but be mindful of morale and ownership.`, tone:'alert', after:()=>flag('leaderTaskDone',true), next:'act2-hub' },
-        { id:'leader-timeout', label:'(Time expired — defaulted to delay)', time:5, hidden:true, deltas:{ morale:-1, points:+2 }, feedback:`Hesitation cost time and credibility. You scrambled to submit.`, tone:'bad', after:()=>{ flag('leaderTaskDone',true); state.flags.timeouts++; }, next:'act2-hub' }
-      ]
-    },
-
-    'alex-2': {
-      id:'alex-2', type:'dialogue', character:'Alex — Client Impact', avatar:'🧑‍💻',
-      text:`Client complaints are tied to Alex’s recent errors. What’s your move?`,
-      choices:[
-        { id:'alex2-fix', label:'Quick fixes to client tickets', time:10, deltas:{ points:+6 }, feedback:`Short-term bandage. Root cause persists.`, tone:'alert', after:()=>flag('alex2Done',true), next:'act2-hub' },
-        { id:'alex2-coach-qa', label:'Targeted coaching + QA review plan', time:15, deltas:{ morale:+2, points:+12 }, feedback:`Stronger fix: skills and checks reduce future errors.`, tone:'good', after:()=>flag('alex2Done',true), next:'act2-hub' },
-        { id:'alex2-reassign', label:'Reassign critical tickets + set checker', time:7, deltas:{ morale:-1, points:+8 }, feedback:`Risk lowered, but fairness concerns surfaced.`, tone:'alert', after:()=>flag('alex2Done',true), next:'act2-hub' }
-      ]
-    },
-
-    'maria-2': {
-      id:'maria-2', type:'dialogue', character:'Maria — Personal Issues Spilling Over', avatar:'🧑‍🍼',
-      text:`Maria’s personal issues are drawing teammates into frequent side conversations.`,
-      choices:[
-        { id:'maria2-boundary', label:'Empathize + Reinforce boundaries + HR/EAP check-in', time:6, deltas:{ boundary:+1, points:+12 }, feedback:`Clear boundaries with support. Team focus improves.`, tone:'good', after:()=>flag('maria2Done',true), next:'act2-hub' },
-        { id:'maria2-counsel', label:'Spend time counseling personally', time:15, deltas:{ boundary:-3, morale:+1, points:+3 }, feedback:`Maria feels heard, but role boundaries blur and time drains.`, tone:'alert', after:()=>flag('maria2Done',true), next:'act2-hub' },
-        { id:'maria2-document', label:'Document impact + set attendance expectations', time:8, deltas:{ points:+10, morale:-1 }, feedback:`Accountability established; ensure empathy in delivery.`, tone:'alert', after:()=>flag('maria2Done',true), next:'act2-hub' }
-      ]
-    },
-
-    'jordan-2': {
-      id:'jordan-2', type:'dialogue', character:'Jordan — Conflict Spreading', avatar:'🗣️',
-      text:`Jordan’s frustration is infecting the team. Address it before morale tanks.`,
-      choices:[
-        { id:'jordan2-mediation', label:'Facilitate mediation + ground rules', time:12, deltas:{ morale:+2, points:+12 }, feedback:`De-escalation and norms set. Morale stabilizes.`, tone:'good', after:()=>flag('jordan2Done',true), next:'act2-hub' },
-        { id:'jordan2-expectations', label:'Reiterate behavior standards + document', time:7, deltas:{ morale:-1, points:+10 }, feedback:`Clear expectations; slight morale dip but clarity helps.`, tone:'alert', after:()=>flag('jordan2Done',true), next:'act2-hub' },
-        { id:'jordan2-ignore', label:'Let it cool off', time:2, deltas:{ morale:-2, points:+2 }, feedback:`Issue simmers and can worsen.`, tone:'bad', after:()=>flag('jordan2Done',true), next:'act2-hub' }
-      ]
-    },
-
-    'act2-score': {
-      id:'act2-score', type:'score', phase:'act2', character:'Mentor', avatar:'🧭',
-      text:`Mid-week wrap. Under pressure, prioritization and boundaries matter more than ever.`
-    },
-
-    // =======================
-    // ACT 3 (Day 3)
-    // =======================
-    'act3-intro': {
-      id:'act3-intro', type:'dialogue', character:'Mentor', avatar:'🧭',
-      text:`Friday. Leadership will review the week. A high-stakes clash is unfolding — choose what to handle first.`,
-      onEnter: () => { setDayAct(3, 3, CONFIG.startTimeDay3); }
-    },
-
-    'act3-clash': {
-      id:'act3-clash', type:'alert', character:'High-Stakes Clash', avatar:'🚨',
-      text:`Simultaneous crises: A client complaint is escalating AND an employee is melting down.`,
-      timer:{ seconds:10, timeoutChoiceId:'clash-timeout' },
-      choices:[
-        { id:'clash-client-first', label:'Address client complaint first', time:8, deltas:{ points:+10 }, feedback:`Client reassured. Employee meltdown worsened slightly.`, tone:'alert', after:()=>flag('act3ClashChoice','client-first'), next:'act3-follow-employee' },
-        { id:'clash-employee-first', label:'De-escalate employee meltdown first', time:10, deltas:{ morale:+2, points:+10 }, feedback:`Employee stabilized. Client waits — tension rises.`, tone:'good', after:()=>flag('act3ClashChoice','employee-first'), next:'act3-follow-client' },
-        { id:'clash-timeout', label:'(Time expired — chaos grows)', time:6, hidden:true, deltas:{ morale:-1, points:+2 }, feedback:`Hesitation added pressure. Fires spread.`, tone:'bad', after:()=>{ state.flags.timeouts++; flag('act3ClashChoice','timeout'); }, next:'act3-follow-client' }
-      ]
-    },
-
-    'act3-follow-employee': {
-      id:'act3-follow-employee', type:'dialogue', character:'Employee Support', avatar:'🧑‍⚕️',
-      text:`The employee is overwhelmed. What’s your approach?`,
-      choices:[
-        { id:'act3-emp-refer', label:'Empathize + refer to HR/EAP + set clear next steps', time:6, deltas:{ boundary:+1, points:+10 }, feedback:`Support with boundaries. Team impact limited.`, tone:'good', after:()=>flag('handledSecondIssue',true), next:'act3-finalize' },
-        { id:'act3-emp-longchat', label:'Long supportive chat', time:12, deltas:{ boundary:-3, morale:+1, points:+3 }, feedback:`Helpful but time-heavy; boundaries blur.`, tone:'alert', after:()=>flag('handledSecondIssue',true), next:'act3-finalize' }
-      ]
-    },
-
-    'act3-follow-client': {
-      id:'act3-follow-client', type:'dialogue', character:'Client Follow-up', avatar:'📣',
-      text:`The client demands assurance and a concrete plan.`,
-      choices:[
-        { id:'act3-client-plan', label:'Deliver specific corrective plan with owners/dates', time:8, deltas:{ points:+12 }, feedback:`Clear accountability calms the client.`, tone:'good', after:()=>flag('handledSecondIssue',true), next:'act3-finalize' },
-        { id:'act3-client-placate', label:'Placate and promise to update later', time:4, deltas:{ points:+4 }, feedback:`Short-term relief, limited confidence.`, tone:'alert', after:()=>flag('handledSecondIssue',true), next:'act3-finalize' }
-      ]
-    },
-
-    'act3-finalize': {
-      id:'act3-finalize', type:'alert', character:'Mentor', avatar:'🧭',
-      text:`Final push. Tie off loose ends and prepare for review.`,
-      choices:[
-        { id:'wrap', label:'Wrap up and proceed to Week Review', time:0, deltas:{}, feedback:`Let’s see how your week landed.`, tone:'good', next:'act3-score' }
-      ]
-    },
-
-    'act3-score': {
-      id:'act3-score', type:'score', phase:'act3', character:'The Boss', avatar:'👔',
-      text:`End-of-week review. Your prioritization, boundaries, and leadership choices drove these outcomes.`
-    },
-
-    // =======================
-    // ACT 4 (Day 4) — PEAK SEASON
-    // =======================
-    'act4-intro': {
-      id:'act4-intro', type:'dialogue', character:'Mentor', avatar:'🧭',
-      text:`Peak Season. Volume spikes, deadlines shrink, and surprises stack. You’ll juggle multiple fires with tighter time. Lead the team through the storm.`,
-      onEnter: () => { setDayAct(4, 4, CONFIG.startTimeDay4); },
-      choices:[
-        { id:'open-peak', label:'Open Peak Season Dashboard', time:0, deltas:{}, feedback:'Brace for parallel fires and timers.', tone:'alert', next:'act4-hub' }
-      ]
-    },
-
-    'act4-hub': {
-      id:'act4-hub', type:'dialogue', character:'System', avatar:'🗂️',
-      text:`Multiple Peak Season incidents are active. Choose what to tackle next. Some decisions are timed.`,
-      onEnter: () => buildPeakHubChoices()
-    },
-
-    // Peak incidents
-    'peak-outage': {
-      id:'peak-outage', type:'alert', character:'Major Outage', avatar:'🧯',
-      text:`Critical feature is down for a segment of users. Choose a response.`,
-      timer:{ seconds:8, timeoutChoiceId:'peak-outage-timeout' },
-      choices:[
-        { id:'peak-outage-swarm', label:'Assemble SWARM (cross-functional rapid fix)', time:12, deltas:{ morale:+1, points:+16 }, feedback:`Focused cross-functional action increases speed and quality.`, tone:'good', after:()=>flag('peakOutageDone',true), next:'act4-hub' },
-        { id:'peak-outage-hotfix', label:'Push quick hotfix (risk of regressions)', time:6, deltas:{ morale:-1, points:+9 }, feedback:`Faster but riskier. Watch for quality fallout.`, tone:'alert', after:()=>flag('peakOutageDone',true), next:'act4-hub' },
-        { id:'peak-outage-defer', label:'Defer — communicate “monitoring”', time:3, deltas:{ morale:-2, points:+3 }, feedback:`Delay calms few, frustrates many. Issue persists.`, tone:'bad', after:()=>flag('peakOutageDone',true), next:'act4-hub' },
-        { id:'peak-outage-timeout', label:'(Timeout — you hesitated)', hidden:true, time:6, deltas:{ morale:-1, points:+2 }, feedback:`Hesitation undercut confidence; you had to scramble.`, tone:'bad', after:()=>{ flag('peakOutageDone',true); state.flags.timeouts++; }, next:'act4-hub' }
-      ]
-    },
-
-    'peak-coverage': {
-      id:'peak-coverage', type:'dialogue', character:'Coverage Crunch', avatar:'📅',
-      text:`Two teammates called out. Coverage is short and backlog is rising.`,
-      choices:[
-        { id:'peak-coverage-volunteer', label:'Call overtime volunteers + rotate to avoid burnout', time:8, deltas:{ morale:+1, points:+12 }, feedback:`Shared load with fairness signals care and planning.`, tone:'good', after:()=>flag('peakCoverageDone',true), next:'act4-hub' },
-        { id:'peak-coverage-reprioritize', label:'Reprioritize backlog + message clients about delays', time:6, deltas:{ points:+10 }, feedback:`Transparent reprioritization keeps trust.`, tone:'good', after:()=>flag('peakCoverageDone',true), next:'act4-hub' },
-        { id:'peak-coverage-push', label:'Push team to double-time (no overtime)', time:2, deltas:{ morale:-2, boundary:+1, points:+4 }, feedback:`Short-term throughput, long-term morale cost.`, tone:'alert', after:()=>flag('peakCoverageDone',true), next:'act4-hub' }
-      ]
-    },
-
-    'peak-quality': {
-      id:'peak-quality', type:'alert', character:'Quality Spike', avatar:'🧪',
-      text:`QA shows a spike in handling errors. Address quality now or it will cascade.`,
-      timer:{ seconds:10, timeoutChoiceId:'peak-quality-timeout' },
-      choices:[
-        { id:'peak-quality-huddle', label:'Run 10-min training huddle + checklist', time:10, deltas:{ morale:+1, points:+14 }, feedback:`Shared standards reduce errors quickly.`, tone:'good', after:()=>flag('peakQualityDone',true), next:'act4-hub' },
-        { id:'peak-quality-checklist', label:'Publish checklist and assign QA champion', time:6, deltas:{ points:+9 }, feedback:`Lightweight guardrails stabilize quality.`, tone:'good', after:()=>flag('peakQualityDone',true), next:'act4-hub' },
-        { id:'peak-quality-ignore', label:'Ignore now, hope it stabilizes', time:2, deltas:{ morale:-2, points:+1 }, feedback:`Unaddressed quality issues compound under load.`, tone:'bad', after:()=>flag('peakQualityDone',true), next:'act4-hub' },
-        { id:'peak-quality-timeout', label:'(Timeout — quality slipped)', hidden:true, time:5, deltas:{ morale:-1, points:+2 }, feedback:`Late action; more rework later.`, tone:'bad', after:()=>{ flag('peakQualityDone',true); state.flags.timeouts++; }, next:'act4-hub' }
-      ]
-    },
-
-    'peak-people': {
-      id:'peak-people', type:'dialogue', character:'People + Fairness', avatar:'👥',
-      text:`Maria missed a shift again; Jordan is loudly complaining about unfair coverage.`,
-      choices:[
-        { id:'peak-people-plan', label:'Empathize + attendance plan (HR/EAP) + fairness talk with Jordan', time:8, deltas:{ boundary:+1, points:+12 }, feedback:`Boundaries with support and fairness messaging reduce friction.`, tone:'good', after:()=>flag('peakPeopleDone',true), next:'act4-hub' },
-        { id:'peak-people-counsel', label:'Long supportive chat with Maria, ignore Jordan for now', time:12, deltas:{ boundary:-3, morale:+1, points:+4 }, feedback:`Supportive but time-heavy; conflict may spread.`, tone:'alert', after:()=>flag('peakPeopleDone',true), next:'act4-hub' },
-        { id:'peak-people-penalize', label:'Penalize absence + public reprimand to Jordan', time:4, deltas:{ boundary:+2, morale:-1, points:+6 }, feedback:`Firm but morale suffers and trust erodes.`, tone:'alert', after:()=>flag('peakPeopleDone',true), next:'act4-hub' }
-      ]
-    },
-
-    // Final late surge
-    'peak-late-surge': {
-      id:'peak-late-surge', type:'alert', character:'Late Surge + Status Call', avatar:'📈',
-      text:`End-of-day spike hits while a status call is due in 15 minutes. Choose your move.`,
-      timer:{ seconds:8, timeoutChoiceId:'peak-late-timeout' },
-      choices:[
-        { id:'peak-late-triage', label:'Deploy triage + post status page update', time:7, deltas:{ points:+12 }, feedback:`Clarity for customers; focused throughput.`, tone:'good', after:()=>flag('peakLateDone',true), next:'act4-score' },
-        { id:'peak-late-narrative', label:'Prepare call narrative; delegate triage', time:6, deltas:{ points:+10 }, feedback:`Strong external communication; team handles the spike.`, tone:'good', after:()=>flag('peakLateDone',true), next:'act4-score' },
-        { id:'peak-late-timeout', label:'(Timeout — rushed response)', hidden:true, time:6, deltas:{ morale:-1, points:+2 }, feedback:`Hesitation forced a rushed plan.`, tone:'bad', after:()=>{ flag('peakLateDone',true); state.flags.timeouts++; }, next:'act4-score' }
-      ]
-    },
-
-    'act4-score': {
-      id:'act4-score', type:'score', phase:'act4', character:'The Boss', avatar:'👔',
-      text:`Peak Season review. Under maximum pressure, your decisions shaped results and resilience.`
-    }
-  };
-
-  // -----------------------------
-  // DOM & UI
-  // -----------------------------
-  const $ = sel => document.querySelector(sel);
-  const content = $('#content');
-  const timeText = $('#time-text');
-  const barTime = $('#bar-time');
-  const barBoundary = $('#bar-boundary');
-  const boundaryText = $('#boundary-text');
-  const moraleText = $('#morale-text');
-  const barMorale = $('#bar-morale');
-  const pointsText = $('#points-num');
-  const dayNum = $('#day-num');
-  const actNum = $('#act-num');
-  const hint = $('#hint');
-  const resetBtn = $('#reset-btn');
-
-  let currentTimer = null;
-
-  // -----------------------------
-  // RENDERING
-  // -----------------------------
-  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-
-  function updateHUD(){
-    timeText.textContent = state.vTime;
-    const timePct = clamp(state.vTime / currentDayStartTime() * 100, 0, 100);
-    barTime.style.width = timePct + '%';
-
-    const bPct = clamp((state.vBoundary + 10) / 20 * 100, 0, 100);
-    barBoundary.style.width = bPct + '%';
-    let bLabel = 'Balanced';
-    if(state.vBoundary <= -4) bLabel = 'Leaning Over‑Involved';
-    else if(state.vBoundary >= 4) bLabel = 'Leaning Detached';
-    boundaryText.textContent = bLabel;
-
-    moraleText.textContent = state.vMorale;
-    const mPct = clamp(state.vMorale / 10 * 100, 0, 100);
-    barMorale.style.width = mPct + '%';
-
-    pointsText.textContent = state.vPoints;
-    dayNum.textContent = CONFIG.day;
-    actNum.textContent = CONFIG.act;
-
-    const actHint = CONFIG.act === 4
-      ? 'Peak Season: time is scarce; set clear priorities.'
-      : CONFIG.act === 2
-        ? 'Time pressure is high. Prioritize under pressure.'
-        : 'Every choice costs time. Balance empathy with boundaries.';
-    if(state.vBoundary <= -4) hint.textContent = 'You’re leaning into personal issues — consider referrals and boundaries.';
-    else if(state.vBoundary >= 4) hint.textContent = 'You’re leaning detached — add empathy and support.';
-    else hint.textContent = actHint;
-  }
-
-  function button(label, timeCost, meta = '', onClick = null, disabled=false){
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.innerHTML = `<span>${label}</span><span class="meta">${meta}${timeCost ? ` • -${timeCost} min` : ''}</span>`;
-    btn.disabled = disabled;
-    if(disabled){
-      btn.classList.add('ghost');
-      btn.setAttribute('aria-disabled','true');
-    }
-    if(onClick) btn.addEventListener('click', onClick);
-    return btn;
-  }
-
-  function renderScene(sceneId){
-    const scene = SCENES[sceneId];
-    if(!scene){ content.innerHTML = `<div class="minor">Scene not found: ${sceneId}</div>`; return; }
-    content.innerHTML = '';
-    cancelTimer();
-
-    if(typeof scene.onEnter === 'function') scene.onEnter();
-
-    if(scene.type === 'score'){
-      renderScoreboard(scene);
-      return;
-    }
-
-    const wrap = document.createElement('div');
-    wrap.className = 'scene';
-
-    const avatar = document.createElement('div');
-    avatar.className = 'avatar';
-    avatar.textContent = scene.avatar || '👤';
-
-    const dialogue = document.createElement('div');
-    dialogue.className = 'dialogue';
-    const name = document.createElement('div');
-    name.className = 'name';
-    name.textContent = scene.character || 'System';
-
-    const text = document.createElement('div');
-    text.className = 'text';
-    text.innerHTML = escapeHTML(scene.text);
-
-    const timerWrap = document.createElement('div');
-    if(scene.timer){
-      timerWrap.className = 'row';
-      const cd = buildCountdown(scene.timer.seconds);
-      timerWrap.appendChild(cd.el);
-      dialogue.appendChild(timerWrap);
-      startTimer(scene, cd);
-    }
-
-    const choices = document.createElement('div');
-    choices.className = 'choices';
-    const feedback = document.createElement('div');
-    feedback.className = 'feedback';
-
-    (scene.choices || []).forEach(ch => {
-      if(ch.hidden) return;
-      const notEnoughTime = (state.vTime - (ch.time || 0)) < 0;
-      const btn = button(
-        ch.label,
-        ch.time || 0,
-        'Decision',
-        () => handleChoice(ch, feedback, scene.id),
-        notEnoughTime
-      );
-      choices.appendChild(btn);
-    });
-
-    dialogue.appendChild(name);
-    dialogue.appendChild(text);
-    dialogue.appendChild(choices);
-    wrap.appendChild(avatar);
-    wrap.appendChild(dialogue);
-    content.appendChild(wrap);
-    content.appendChild(feedback);
-
-    updateHUD();
-  }
-
-  function handleChoice(choice, feedbackEl, currentSceneId){
-    cancelTimer();
-
-    const tt = choice.time || 0;
-    state.vTime = clamp(state.vTime - tt, 0, 999);
-    const d = choice.deltas || {};
-    if(typeof d.boundary === 'number') state.vBoundary = clamp(state.vBoundary + d.boundary, -10, 10);
-    if(typeof d.morale === 'number') state.vMorale = clamp(state.vMorale + d.morale, 0, 10);
-
-    // Points plus small time-efficiency bonus
-    const timeEff = tt <= 5 ? 1 : 0;
-    state.vPoints = clamp(state.vPoints + (d.points || 0) + timeEff, 0, 9999);
-
-    if(typeof choice.after === 'function') choice.after();
-
-    state.history.push({ scene: currentSceneId, choice: choice.id, timeSpent: tt, deltas: d });
-
-    showFeedback(feedbackEl, choice.feedback || 'Noted.', choice.tone);
-    updateHUD();
-
-    const cont = button('Continue', 0, '', () => {
-      if(state.vTime <= 0){
-        // If time out, go to current act score
-        const phaseByAct = {1:'act1-score',2:'act2-score',3:'act3-score',4:'act4-score'};
-        renderScene(phaseByAct[CONFIG.act] || 'act3-score');
-        return;
-      }
-      const nextId = choice.next;
-      if(nextId) {
-        renderScene(nextId);
-      } else {
-        if(CONFIG.act === 2) renderScene('act2-hub');
-        else if(CONFIG.act === 4) renderScene('act4-hub');
-        else renderScene('act3-score');
-      }
-    });
-    cont.style.marginTop = '10px';
-    feedbackEl.appendChild(cont);
-  }
-
-  function showFeedback(el, message, tone='alert'){
-    el.className = `feedback show ${tone === 'good' ? 'good' : tone === 'bad' ? 'bad' : 'alert'}`;
-    el.innerHTML = `<strong>Feedback</strong><br>${escapeHTML(message)}`;
-    el.scrollIntoView({behavior:'smooth', block:'nearest'});
-  }
-
-  // -----------------------------
-  // SCOREBOARD + KPI EXPLAINER
-  // -----------------------------
-  function renderScoreboard(scene){
-    // Aggregates
-    const timeLeft = state.vTime;
-    const boundaryScoreRaw = 10 - Math.abs(state.vBoundary); // closer to 0 is better
-    const morale = state.vMorale;
-
-    const dayStart = currentDayStartTime();
-    const timeScore = clamp(Math.round(timeLeft * 1.2), 0, 100);
-    const boundScore = clamp(Math.round(boundaryScoreRaw * 2), 0, 20);
-    const moraleScore = clamp(Math.round(morale * 5), 0, 50);
-    const decisionScore = clamp(state.vPoints, 0, 999);
-
-    const overall = clamp(Math.round(timeScore + boundScore + moraleScore + Math.min(decisionScore, 80)), 0, 200);
-
-    // Identify act phase for explanations and baselines
-    const phase = scene.phase || ('act' + CONFIG.act);
-    const actIndex = (phase === 'act1' ? 1 : phase === 'act2' ? 2 : phase === 'act3' ? 3 : 4);
-
-    // Points earned this act for fair comparison
-    const actPoints = Math.max(0, state.vPoints - (state.pointsAtActStart[actIndex] || 0));
-    const pointBaselines = { act1: 25, act2: 40, act3: 30, act4: 55 };
-    const baseline = pointBaselines[phase] || 30;
-
-    // Badges
-    const badges = [];
-    if(state.flags.alexChoice === 'coach') badges.push({icon:'🧩',label:'Coaching Pro'});
-    if(state.flags.mariaChoice === 'refer' || state.flags.maria2Done && state.vBoundary >= -1) badges.push({icon:'🛡️',label:'Boundary Setter'});
-    if(state.flags.jordanChoice === 'empathy' || state.flags.jordan2Done) badges.push({icon:'🕊️',label:'Conflict Diffuser'});
-    if(timeLeft >= Math.round(dayStart * 0.2)) badges.push({icon:'⏱️',label:'Time Saver'});
-    if(state.flags.timeouts === 0 && CONFIG.act >= 2) badges.push({icon:'🎯',label:'Prioritizer Under Pressure'});
-    if(state.flags.leaderTaskDone && CONFIG.act >= 2) badges.push({icon:'🗂️',label:'Documentation Pro'});
-    if(phase === 'act4'){
-      if(state.flags.timeouts === 0) badges.push({icon:'🎻',label:'Crisis Conductor'});
-      if(morale >= 7) badges.push({icon:'💪',label:'Resilience Builder'});
-      if(timeLeft >= Math.round(dayStart * 0.25)) badges.push({icon:'⚡',label:'Efficiency Under Fire'});
-      badges.push({icon:'🏆',label:'Peak Season Master'});
-    }
-
-    // Narrative outcome
-    let summary = '';
-    if(morale >= 7 && Math.abs(state.vBoundary) <= 3) summary = 'Team is stable and performing well.';
-    else if(morale <= 3 || Math.abs(state.vBoundary) >= 7) summary = 'Morale is low or boundaries were off. Issues linger.';
-    else summary = 'Mixed outcomes — some progress, some risks remain.';
-
-    // Trusted leader unlock (end of Act 3 or after)
-    const trusted = (phase === 'act3' || phase === 'act4')
-      ? (overall >= 130 && morale >= 6 && Math.abs(state.vBoundary) <= 5)
-      : state.flags.trustedLeader;
-    state.flags.trustedLeader = trusted || state.flags.trustedLeader;
-
-    // KPI Explainer (why)
-    const kpiExplainHTML = buildKPIExplainer({
-      phase, timeLeft, dayStart,
-      boundary: state.vBoundary,
-      morale,
-      actPoints,
-      baseline,
-      timeouts: state.flags.timeouts
-    });
-
-    content.innerHTML = `
-      <div class="scene">
-        <div class="avatar">${scene.avatar || '📊'}</div>
-        <div class="dialogue">
-          <div class="name">${scene.character || 'Review'}</div>
-          <div class="text">${escapeHTML(scene.text)}</div>
-
-          <div class="scoreboard" style="margin-top:12px">
-            <div class="score-cards">
-              <div class="score-card"><h4>Time Efficiency</h4><div class="big">${timeScore}</div><div class="minor">${timeLeft} min left</div></div>
-              <div class="score-card"><h4>Boundary Effectiveness</h4><div class="big">${boundScore}</div><div class="minor">Balance: ${Math.abs(state.vBoundary)} from center</div></div>
-              <div class="score-card"><h4>Staff Morale</h4><div class="big">${moraleScore}</div><div class="minor">${morale}/10</div></div>
-              <div class="score-card"><h4>Decision Points</h4><div class="big">${decisionScore}</div><div class="minor">Total accumulated</div></div>
-            </div>
-
-            <div class="score-card">
-              <h4>Outcome</h4>
-              <div class="minor">${escapeHTML(summary)}</div>
-            </div>
-
-            <div class="score-card">
-              <h4>Badges</h4>
-              <div class="badges" id="badges"></div>
-            </div>
-          </div>
-
-          <div class="kpi-explain" style="margin-top:12px">
-            <h4>Why your KPI scores look this way</h4>
-            ${kpiExplainHTML}
-          </div>
-        </div>
-      </div>
-      <div class="feedback ${trusted ? 'good' : 'alert'}" style="margin-top:12px">
-        ${phase === 'act4'
-          ? (trusted ? 'Boss: Outstanding. You led through Peak Season with balance and results.' : 'Boss: Good effort under heavy load. Review the KPI notes and try a different approach next time.')
-          : phase === 'act3'
-            ? (trusted ? 'Boss: Recognized as a Trusted Leader. Peak Season unlocked!' : 'Boss: Solid effort. Review KPI notes; strengthen your balance to unlock Peak Season.')
-            : 'Mentor: Effective leaders set clear priorities and maintain boundaries. Reflect on where you’d adjust next time.'}
-      </div>
-    `;
-
-    // Badges render
-    const badgesWrap = $('#badges');
-    if(badges.length === 0){
-      badgesWrap.innerHTML = `<span class="minor">No badges this time — try a different approach.</span>`;
-    } else {
-      badges.forEach(b => {
-        const el = document.createElement('div');
-        el.className = 'badge';
-        el.innerHTML = `<span class="b-ic">${b.icon}</span><span>${b.label}</span>`;
-        badgesWrap.appendChild(el);
-      });
-    }
-
-    // Actions
-    const actionsRow = document.createElement('div');
-    actionsRow.className = 'row';
-    actionsRow.style.marginTop = '10px';
-
-    // Replay buttons
-    const replay = button(
-      phase === 'act4' ? 'Replay Peak Season' :
-      phase === 'act3' ? 'Replay Act 3 (Week End)' :
-      phase === 'act2' ? 'Replay Act 2 (Mid-Week)' :
-      'Replay Act 1',
-      0, '', () => {
-        if(phase === 'act1') startAct1();
-        else if(phase === 'act2') startAct2();
-        else if(phase === 'act3') startAct3();
-        else startAct4(false);
-      }
-    );
-    actionsRow.appendChild(replay);
-
-    if(phase === 'act1'){
-      const cont = button('Continue to Act 2 (Day 2)', 0, '', startAct2);
-      actionsRow.appendChild(cont);
-    } else if(phase === 'act2'){
-      const cont = button('Continue to Act 3 (Day 3)', 0, '', startAct3);
-      actionsRow.appendChild(cont);
-    } else if(phase === 'act3'){
-      const cont = button(
-        trusted ? 'Continue to Peak Season (Act 4)' : 'Practice Peak Season (Act 4)',
-        0,
-        '',
-        () => startAct4(!trusted) // practice mode if not trusted
-      );
-      actionsRow.appendChild(cont);
-    } else if(phase === 'act4'){
-      const restartWeek = button('Play Again from Day 1', 0, '', startAct1);
-      actionsRow.appendChild(restartWeek);
-    }
-
-    // Peak lock note
-    if(phase === 'act3' && !trusted){
-      const lockNote = document.createElement('div');
-      lockNote.className = 'minor';
-      lockNote.style.marginLeft = '8px';
-      lockNote.textContent = 'Peak Season unlock: overall ≥ 130, morale ≥ 6, boundaries near center. Practice mode is available (no unlock progress).';
-      actionsRow.appendChild(lockNote);
-    }
-
-    content.appendChild(actionsRow);
-    updateHUD();
-  }
-
-  function buildKPIExplainer({phase, timeLeft, dayStart, boundary, morale, actPoints, baseline, timeouts}){
-    const r = timeLeft / (dayStart || 1);
-    const timeVerdict = r >= 0.25 ? 'Good' : r >= 0.1 ? 'Okay' : 'Needs improvement';
-    const timeWhy = [
-      `You finished with ${Math.round(r*100)}% of your time remaining.`,
-      r >= 0.25 ? 'You timeboxed well and preserved buffer for surprises.' :
-      r >= 0.1 ? 'You used most of your day — consider tighter timeboxes on lower-impact issues.' :
-      'You ran low on time — long conversations or delays likely crowded out other priorities.'
-    ];
-    if(timeouts > 0) timeWhy.push(`You missed ${timeouts} timed decision${timeouts>1?'s':''}, which added time pressure and reduced points.`);
-
-    const dist = Math.abs(boundary);
-    const bVerdict = dist <= 3 ? 'Balanced' : dist <= 6 ? (boundary > 0 ? 'Leaning Detached' : 'Leaning Over‑Involved') : (boundary > 0 ? 'Too Detached' : 'Too Involved');
-    const bWhy = [
-      dist <= 3 ? 'You balanced empathy with limits — appropriate use of coaching/referrals.' :
-      boundary > 0 ? 'You tended to be brisk or hands-off — add empathetic framing when setting standards.' :
-      'You spent extra time in personal support — use HR/EAP and set time boundaries.'
-    ];
-
-    const mVerdict = morale >= 7 ? 'High' : morale >= 4 ? 'Mixed' : 'Low';
-    const mWhy = [
-      morale >= 7 ? 'Your de-escalation and fairness steps supported morale.' :
-      morale >= 4 ? 'Some actions helped, others hurt — tighten consistency.' :
-      'Pressure, delays, or harsh messaging likely lowered morale.'
-    ];
-
-    // Contextual hints from history (optional flavor)
-    const used = id => state.history.some(h => h.choice === id);
-    if(used('jordan-direct') || used('jordan2-expectations') || used('peak-coverage-push') || used('peak-people-penalize')){
-      mWhy.push('Firm but harsh actions tend to dip morale — pair standards with empathy.');
-    }
-    if(used('jordan-empathy') || used('jordan2-mediation') || used('peak-people-plan')){
-      mWhy.push('De-escalation and fairness conversations raised morale.');
-    }
-
-    const pVerdict = actPoints >= baseline ? 'Strong' : actPoints >= baseline*0.6 ? 'Moderate' : 'Low';
-    const pWhy = [
-      `You earned ${actPoints} decision points this act (target ≈ ${baseline}).`,
-      actPoints >= baseline ? 'You applied the right tools (coaching, boundaries, escalation) efficiently.' :
-      actPoints >= baseline*0.6 ? 'Mixed tool use — consider more structured coaching and timely referrals.' :
-      'You left value on the table — try deeper root-cause coaching and clearer boundaries.'
-    ];
-
-    return `
-      <ul>
-        <li><b>Time Efficiency — ${timeVerdict}.</b> ${escapeHTML(timeWhy.join(' '))}</li>
-        <li><b>Boundary Effectiveness — ${bVerdict}.</b> ${escapeHTML(bWhy.join(' '))}</li>
-        <li><b>Staff Morale — ${mVerdict}.</b> ${escapeHTML(mWhy.join(' '))}</li>
-        <li><b>Decision Points — ${pVerdict}.</b> ${escapeHTML(pWhy.join(' '))}</li>
-      </ul>
-    `;
-  }
-
-  // -----------------------------
-  // TIMERS
-  // -----------------------------
-  function buildCountdown(seconds){
-    const el = document.createElement('div');
-    el.className = 'countdown';
-    const lbl = document.createElement('span');
-    lbl.textContent = 'Decision timer';
-    const bar = document.createElement('div');
-    bar.className = 'cd-bar';
-    const fill = document.createElement('div');
-    fill.className = 'cd-fill';
-    bar.appendChild(fill);
-    const num = document.createElement('span');
-    num.className = 'cd-num';
-    num.textContent = seconds;
-    el.appendChild(lbl);
-    el.appendChild(bar);
-    el.appendChild(num);
-    return { el, fill, num, total: seconds };
-  }
-
-  function startTimer(scene, cd){
-    let remaining = cd.total;
-    const totalMs = cd.total * 1000;
-    const start = Date.now();
-    currentTimer = setInterval(() => {
-      const elapsed = Date.now() - start;
-      remaining = Math.max(0, Math.ceil((totalMs - elapsed)/1000));
-      cd.num.textContent = remaining;
-      const pct = clamp(((totalMs - elapsed) / totalMs) * 100, 0, 100);
-      cd.fill.style.width = (100 - pct) + '%';
-      if(remaining <= 0){
-        cancelTimer();
-        if(scene.timer && scene.timer.timeoutChoiceId){
-          const timeoutCh = (scene.choices || []).find(c => c.id === scene.timer.timeoutChoiceId);
-          if(timeoutCh){
-            const feedbackEl = document.querySelector('.feedback') || document.createElement('div');
-            handleChoice(timeoutCh, feedbackEl, scene.id);
-          }
+        // Game Functions
+        function updateStats() {
+            // Update display values
+            document.getElementById('morale').textContent = Math.round(gameState.stats.morale);
+            document.getElementById('time').textContent = Math.round(gameState.stats.timeLeft);
+            document.getElementById('wellness').textContent = Math.round(gameState.stats.wellness);
+            document.getElementById('project').textContent = Math.round(gameState.stats.projectCompletion);
+
+            // Update progress bars
+            document.getElementById('morale-bar').style.width = `${Math.min(100, Math.max(0, gameState.stats.morale))}%`;
+            document.getElementById('time-bar').style.width = `${Math.min(100, Math.max(0, (gameState.stats.timeLeft / gameState.maxTime) * 100))}%`;
+            document.getElementById('wellness-bar').style.width = `${Math.min(100, Math.max(0, gameState.stats.wellness))}%`;
+            document.getElementById('project-bar').style.width = `${Math.min(100, Math.max(0, gameState.stats.projectCompletion))}%`;
+
+            // Check for critical states
+            if (gameState.stats.morale <= 0 || gameState.stats.wellness <= 0) {
+                gameState.currentScene = 'ending';
+                renderScene();
+            }
         }
-      }
-    }, 100);
-  }
-  function cancelTimer(){
-    if(currentTimer){ clearInterval(currentTimer); currentTimer = null; }
-  }
 
-  // -----------------------------
-  // HUB BUILDERS
-  // -----------------------------
-  function buildAct2HubChoices(){
-    const hub = SCENES['act2-hub'];
-    const pending = [];
-    if(!state.flags.leaderTaskDone) pending.push({
-      id:'go-leader', label:'Leadership Priority Task', time:0, deltas:{}, feedback:'Handle leadership’s request.', tone:'alert', next:'act2-leader-task'
-    });
-    if(!state.flags.alex2Done) pending.push({
-      id:'go-alex2', label:'Client complaints tied to Alex', time:0, deltas:{}, feedback:'Address client impact and root causes.', tone:'alert', next:'alex-2'
-    });
-    if(!state.flags.maria2Done) pending.push({
-      id:'go-maria2', label:'Personal issues affecting team', time:0, deltas:{}, feedback:'Support with boundaries.', tone:'alert', next:'maria-2'
-    });
-    if(!state.flags.jordan2Done) pending.push({
-      id:'go-jordan2', label:'Conflict spreading across team', time:0, deltas:{}, feedback:'De-escalate and set norms.', tone:'alert', next:'jordan-2'
-    });
+        function getEffectMessage(effects) {
+            const messages = [];
+            
+            if (effects.morale > 0) messages.push("Team morale improved!");
+            else if (effects.morale < -10) messages.push("Team morale took a hit!");
+            
+            if (effects.wellness < -10) messages.push("You're feeling the stress...");
+            else if (effects.wellness > 10) messages.push("Good work-life balance!");
+            
+            if (effects.projectCompletion > 15) messages.push("Great progress on the project!");
+            else if (effects.projectCompletion < 0) messages.push("Project progress slowed down.");
+            
+            if (effects.timeLeft < -5) messages.push("That took longer than expected!");
+            
+            return messages[0] || "Decision made.";
+        }
 
-    if(pending.length === 0){
-      hub.text = `You’ve addressed the mid-week fires with the time you had. Ready for a quick review?`;
-      hub.choices = [{ id:'to-score', label:'Proceed to Mid-Week Review', time:0, deltas:{}, feedback:'Reviewing...', tone:'good', next:'act2-score' }];
-    } else {
-      hub.text = `Multiple fires. Choose what to tackle next. Avoid overthinking — time is ticking.`;
-      hub.choices = pending;
-    }
-  }
+        function getNotificationType(effects) {
+            const totalEffect = effects.morale + effects.wellness + effects.projectCompletion;
+            if (totalEffect > 10) return 'positive';
+            if (totalEffect < -10) return 'negative';
+            return 'neutral';
+        }
 
-  function buildPeakHubChoices(){
-    const hub = SCENES['act4-hub'];
-    const pending = [];
-    if(!state.flags.peakOutageDone) pending.push({ id:'go-peak-outage', label:'Major outage response (timed)', next:'peak-outage', time:0, deltas:{}, feedback:'Coordinate the fix.' });
-    if(!state.flags.peakCoverageDone) pending.push({ id:'go-peak-coverage', label:'Coverage crunch', next:'peak-coverage', time:0, deltas:{}, feedback:'Solve staffing and flow.' });
-    if(!state.flags.peakQualityDone) pending.push({ id:'go-peak-quality', label:'Quality spike (timed)', next:'peak-quality', time:0, deltas:{}, feedback:'Stabilize quality.' });
-    if(!state.flags.peakPeopleDone) pending.push({ id:'go-peak-people', label:'People + fairness', next:'peak-people', time:0, deltas:{}, feedback:'Balance empathy and standards.' });
+        function applyEffects(effects) {
+            const oldStats = { ...gameState.stats };
+            
+            gameState.stats.morale = Math.max(0, Math.min(100, gameState.stats.morale + effects.morale));
+            gameState.stats.timeLeft = Math.max(0, gameState.stats.timeLeft + effects.timeLeft);
+            gameState.stats.wellness = Math.max(0, Math.min(100, gameState.stats.wellness + effects.wellness));
+            gameState.stats.projectCompletion = Math.max(0, Math.min(100, gameState.stats.projectCompletion + effects.projectCompletion));
+            
+            // Show notification about the effects
+            const message = getEffectMessage(effects);
+            const type = getNotificationType(effects);
+            showNotification(message, type);
+            
+            updateStats();
+        }
 
-    if(pending.length === 0 && !state.flags.peakLateDone){
-      hub.text = `Final push: a late surge hits while a status call is due.`;
-      hub.choices = [{ id:'go-peak-late', label:'Handle Late Surge (timed)', time:0, deltas:{}, feedback:'Decide fast.', tone:'alert', next:'peak-late-surge' }];
-    } else if(pending.length === 0 && state.flags.peakLateDone){
-      hub.text = `You’ve handled Peak Season incidents with the time you had. Ready for review?`;
-      hub.choices = [{ id:'to-peak-score', label:'Proceed to Peak Season Review', time:0, deltas:{}, feedback:'Reviewing...', tone:'good', next:'act4-score' }];
-    } else {
-      hub.text = `Peak Season hub: choose your next priority.`;
-      hub.choices = pending;
-    }
-  }
+        function makeChoice(choiceIndex) {
+            const currentSceneData = scenes[gameState.currentScene];
+            const choice = currentSceneData.choices[choiceIndex];
+            
+            // Store decision for final review
+            gameState.decisions.push({
+                scene: gameState.currentScene,
+                choice: choice.text,
+                effects: choice.effects
+            });
 
-  // -----------------------------
-  // STATE/UTILS
-  // -----------------------------
-  function adjust({time=0, morale=0, boundary=0, points=0}){
-    if(time) state.vTime = clamp(state.vTime + time, 0, 999);
-    if(morale) state.vMorale = clamp(state.vMorale + morale, 0, 10);
-    if(boundary) state.vBoundary = clamp(state.vBoundary + boundary, -10, 10);
-    if(points) state.vPoints = clamp(state.vPoints + points, 0, 9999);
-  }
+            // Apply effects
+            applyEffects(choice.effects);
 
-  function flag(name, value){ state.flags[name] = value; }
+            // Move to next scene
+            gameState.currentScene = choice.next;
+            
+            // Small delay to show stat changes before scene transition
+            setTimeout(() => {
+                renderScene();
+            }, 500);
+        }
 
-  function escapeHTML(str){
-    return String(str).replace(/[&<>'"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
-  }
+        function calculateGrade() {
+            const score = (
+                gameState.stats.morale * 0.3 +
+                gameState.stats.wellness * 0.2 +
+                gameState.stats.projectCompletion * 0.4 +
+                (gameState.stats.timeLeft > 0 ? 10 : 0)
+            );
 
-  function setDayAct(day, act, timeStart){
-    CONFIG.day = day; CONFIG.act = act;
-    state.vTime = timeStart;
-    // Record points at act start for fair KPI explanation
-    if(state.pointsAtActStart[act] === undefined || state.pointsAtActStart[act] === null){
-      state.pointsAtActStart[act] = state.vPoints;
-    }
-    updateHUD();
-  }
+            if (score >= 90) return 'A+';
+            if (score >= 80) return 'A';
+            if (score >= 70) return 'B+';
+            if (score >= 60) return 'B';
+            if (score >= 50) return 'C';
+            return 'D';
+        }
 
-  function currentDayStartTime(){
-    if(CONFIG.day === 1) return CONFIG.startTimeDay1;
-    if(CONFIG.day === 2) return CONFIG.startTimeDay2;
-    if(CONFIG.day === 3) return CONFIG.startTimeDay3;
-    return CONFIG.startTimeDay4;
-  }
+        function generateFeedback() {
+            const strengths = [];
+            const improvements = [];
 
-  // -----------------------------
-  // ENTRY POINTS
-  // -----------------------------
-  function resetGame(){
-    CONFIG.day = 1; CONFIG.act = 1;
-    state.vTime = CONFIG.startTimeDay1;
-    state.vBoundary = CONFIG.startBoundary;
-    state.vMorale = CONFIG.startMorale;
-    state.vPoints = 0;
-    state.pointsAtActStart = {1:0,2:0,3:0,4:0};
-    state.flags = {
-      alexDone:false, mariaDone:false, jordanDone:false,
-      alexChoice:null, mariaChoice:null, jordanChoice:null,
-      finishedAlexBeforeJordan:false, resolvedJordanFully:false,
+            // Analyze final stats
+            if (gameState.stats.morale >= 70) {
+                strengths.push("Excellent team morale management - Your team trusts your leadership");
+            } else if (gameState.stats.morale >= 40) {
+                improvements.push("Team morale needs attention - Consider more inclusive decision-making");
+            } else {
+                improvements.push("Critical: Team morale is dangerously low - Prioritize team well-being");
+            }
 
-      alex2Done:false, maria2Done:false, jordan2Done:false, leaderTaskDone:false,
-      act2IntroApplied:false, timeouts:0,
+            if (gameState.stats.wellness >= 60) {
+                strengths.push("Good work-life balance - You set healthy boundaries");
+            } else if (gameState.stats.wellness >= 30) {
+                improvements.push("Work-life balance needs improvement - Remember to delegate more");
+            } else {
+                improvements.push("Critical: Burnout risk - You can't lead effectively if you're exhausted");
+            }
 
-      act3ClashChoice:null, handledSecondIssue:false,
+            if (gameState.stats.projectCompletion >= 80) {
+                strengths.push("Outstanding project delivery - Goals were exceeded");
+            } else if (gameState.stats.projectCompletion >= 60) {
+                strengths.push("Solid project completion - Key objectives were met");
+            } else if (gameState.stats.projectCompletion >= 40) {
+                improvements.push("Project completion needs work - Focus on prioritization");
+            } else {
+                improvements.push("Critical: Project goals were not met - Review time management strategies");
+            }
 
-      peakOutageDone:false, peakCoverageDone:false, peakQualityDone:false, peakPeopleDone:false, peakLateDone:false,
-      peakPractice:false,
+            if (gameState.stats.timeLeft > 10) {
+                strengths.push("Excellent time management - You worked efficiently");
+            } else if (gameState.stats.timeLeft <= 0) {
+                improvements.push("Time management needs improvement - You overcommitted resources");
+            }
 
-      trustedLeader:false
-    };
-    state.history = [];
-    renderScene('intro');
-  }
+            // Analyze decision patterns
+            const overtimeDecisions = gameState.decisions.filter(d => d.choice.toLowerCase().includes('overtime'));
+            if (overtimeDecisions.length > 0) {
+                improvements.push("Consider alternatives to overtime - It's not always the answer");
+            }
 
-  function startAct1(){ resetGame(); }
+            const delegationDecisions = gameState.decisions.filter(d => d.choice.toLowerCase().includes('delegate'));
+            if (delegationDecisions.length >= 2) {
+                strengths.push("Good delegation skills - You trust your team");
+            }
 
-  function startAct2(){ renderScene('act2-intro'); }
+            return { strengths, improvements };
+        }
 
-  function startAct3(){
-    renderScene('act3-intro');
-    setTimeout(() => renderScene('act3-clash'), 400);
-  }
+        function renderEnding() {
+            const grade = calculateGrade();
+            const feedback = generateFeedback();
+            
+            let gradeEmoji = '🏆';
+            if (grade.includes('A')) gradeEmoji = '🌟';
+            else if (grade.includes('B')) gradeEmoji = '👍';
+            else if (grade.includes('C')) gradeEmoji = '📈';
+            else gradeEmoji = '💪';
 
-  function startAct4(practiceMode=false){
-    state.flags.peakPractice = !!practiceMode;
-    renderScene('act4-intro');
-  }
+            const endingHTML = `
+                <div class="scene-image">${gradeEmoji}</div>
+                <h2 class="scene-title">Final Performance Review</h2>
+                
+                <div class="ending-summary">
+                    <div class="ending-grade">Grade: ${grade}</div>
+                    
+                    <div class="feedback-section">
+                        <h3 class="feedback-title">
+                            <span>✨</span>
+                            <span>Your Strengths</span>
+                        </h3>
+                        <ul class="feedback-list">
+                            ${feedback.strengths.map(s => `<li>${s}</li>`).join('')}
+                            ${feedback.strengths.length === 0 ? '<li>Keep working on building your leadership skills</li>' : ''}
+                        </ul>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3 class="feedback-title">
+                            <span>📚</span>
+                            <span>Areas for Growth</span>
+                        </h3>
+                        <ul class="feedback-list improvements">
+                            ${feedback.improvements.map(i => `<li>${i}</li>`).join('')}
+                            ${feedback.improvements.length === 0 ? '<li>Outstanding performance! Keep maintaining this balance</li>' : ''}
+                        </ul>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3 class="feedback-title">
+                            <span>📊</span>
+                            <span>Final Statistics</span>
+                        </h3>
+                        <ul class="feedback-list">
+                            <li>Team Morale: ${Math.round(gameState.stats.morale)}%</li>
+                            <li>Personal Wellness: ${Math.round(gameState.stats.wellness)}%</li>
+                            <li>Project Completion: ${Math.round(gameState.stats.projectCompletion)}%</li>
+                            <li>Time Efficiency: ${gameState.stats.timeLeft > 0 ? `${gameState.stats.timeLeft} hours saved` : 'All time utilized'}</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="restart-btn" onclick="restartGame()">Play Again</button>
+            `;
+            
+            document.getElementById('scene-container').innerHTML = endingHTML;
+        }
 
-  // -----------------------------
-  // INIT
-  // -----------------------------
-  resetBtn.addEventListener('click', resetGame);
-  renderScene('intro');
-})();
-</script>
+        function renderScene() {
+            const sceneData = scenes[gameState.currentScene];
+            
+            if (sceneData.isEnding) {
+                renderEnding();
+                return;
+            }
+
+            let sceneHTML = `
+                <div class="scene-image">${sceneData.image}</div>
+                <h2 class="scene-title">${sceneData.title}</h2>
+                <p class="scene-description">${sceneData.description}</p>
+            `;
+
+            if (sceneData.dialogue) {
+                const character = gameState.characters[sceneData.dialogue.character];
+                sceneHTML += `
+                    <div class="character-dialogue">
+                        <div class="character-name">${character.emoji} ${character.name}:</div>
+                        <div>${sceneData.dialogue.text}</div>
+                    </div>
+                `;
+            }
+
+            sceneHTML += '<div class="choices-container">';
+            sceneData.choices.forEach((choice, index) => {
+                sceneHTML += `
+                    <button class="choice-btn" onclick="makeChoice(${index})">
+                        <div>${choice.text}</div>
+                    </button>
+                `;
+            });
+            sceneHTML += '</div>';
+
+            document.getElementById('scene-container').innerHTML = sceneHTML;
+        }
+
+        function restartGame() {
+            // Reset game state
+            gameState.currentScene = 'intro';
+            gameState.stats = {
+                morale: 75,
+                timeLeft: 40,
+                wellness: 70,
+                projectCompletion: 0
+            };
+            gameState.decisions = [];
+            
+            updateStats();
+            renderScene();
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            renderScene();
+        });
+    </script>
 </body>
 </html>
