@@ -1,1 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BPO Leader: Time Management Challenge</title>
+    <style>
+        :root{ --primary:#005393; }
+
+        *{ margin:0; padding:0; box-sizing:border-box; }
+
+        body{
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:#005393;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+        }
+
+        .game-container{
+            background:white;
+            border-radius:20px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.3);
+            max-width:800px;
+            width:100%;
+            overflow:hidden;
+            animation:slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn{
+            from{ opacity:0; transform:translateY(-30px); }
+            to{ opacity:1; transform:translateY(0); }
+        }
+
+        .header{
+            background: var(--primary);
+            color:white;
+            padding:30px;
+            text-align:center;
+            position:relative;
+        }
+
+        .header h1{
+            font-size:2.5em;
+            margin-bottom:10px;
+            text-shadow:2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .subtitle{ font-size:1.1em; opacity:0.9; }
+
+        /* Day Indicator */
+        .day-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .day-indicator .day-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .day-indicator .day-name {
+            font-size: 1.2em;
+            margin-top: 3px;
+        }
+
+        /* Week Progress Bar */
+        .week-progress {
+            background: rgba(0,0,0,0.1);
+            height: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .week-progress-fill {
+            background: linear-gradient(90deg, #ffffff, #ffd700);
+            height: 100%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* Day dots indicator */
+        .day-dots {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f0f4f8;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .day-dot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .day-dot-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .day-dot.completed .day-dot-circle {
+            background: #28a745;
+            color: white;
+        }
+
+        .day-dot.current .day-dot-circle {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 3px rgba(0,83,147,0.2);
+            animation: bounce 2s infinite;
+        }
+
+        .day-dot-label {
+            font-size: 0.75em;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .day-dot.current .day-dot-label {
+            color: var(--primary);
+        }
+
+        .stats-bar{
+            display:flex;
+            justify-content:space-around;
+            padding:20px;
+            background:#f8f9fa;
+            border-bottom:2px solid #e9ecef;
+        }
+
+        .stat{ text-align:center; flex:1; }
+        .stat-icon{ font-size:2em; margin-bottom:5px; }
+        .stat-label{ font-size:0.9em; color:#6c757d; margin-bottom:5px; }
+        .stat-value{ font-size:1.2em; font-weight:bold; color:#495057; }
+
+        .progress-bar{
+            width:100%;
+            height:8px;
+            background:#e9ecef;
+            border-radius:4px;
+            overflow:hidden;
+            margin-top:5px;
+        }
+        .progress-fill{ height:100%; transition:width 0.3s ease; }
+        .morale-fill{ background:linear-gradient(90deg,#28a745,#20c997); }
+        .time-fill{ background:linear-gradient(90deg,#ffc107,#fd7e14); }
+        .wellness-fill{ background:linear-gradient(90deg,#6f42c1,#e83e8c); }
+        .project-fill{ background:linear-gradient(90deg,#007bff,#17a2b8); }
+
+        .scene-container{ padding:30px; min-height:400px; }
+
+        .scene-image{
+            text-align:center;
+            font-size:5em;
+            margin-bottom:20px;
+            animation:bounce 2s infinite;
+        }
+        @keyframes bounce{
+            0%,100%{ transform:translateY(0); }
+            50%{ transform:translateY(-10px); }
+        }
+
+        .scene-title{
+            font-size:1.8em;
+            color:#495057;
+            margin-bottom:15px;
+            text-align:center;
+        }
+        .scene-description{
+            font-size:1.1em;
+            line-height:1.6;
+            color:#6c757d;
+            margin-bottom:30px;
+            text-align:center;
+        }
+
+        .character-dialogue{
+            background:#f8f9fa;
+            border-left:4px solid var(--primary);
+            padding:15px;
+            margin:20px 0;
+            border-radius:5px;
+        }
+        .character-name{
+            font-weight:bold;
+            color:var(--primary);
+            margin-bottom:5px;
+        }
+
+        .choices-container{
+            display:flex;
+            flex-direction:column;
+            gap:15px;
+            margin-top:30px;
+        }
+        .choice-btn{
+            background:white;
+            border:2px solid var(--primary);
+            color:var(--primary);
+            padding:15px 20px;
+            border-radius:10px;
+            font-size:1em;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            text-align:left;
+            position:relative;
+            overflow:hidden;
+        }
+        .choice-btn:hover{
+            background:var(--primary);
+            color:white;
+            transform:translateX(5px);
+            box-shadow:0 5px 15px rgba(0,83,147,0.3);
+        }
+        .choice-btn::before{
+            content:'→';
+            position:absolute;
+            right:20px;
+            top:50%;
+            transform:translateY(-50%);
+            font-size:1.2em;
+        }
+
+        .ending-summary{
+            background:#f8f9fa;
+            border-radius:10px;
+            padding:30px;
+            margin:20px 0;
+        }
+        .ending-grade{
+            text-align:center;
+            font-size:4em;
+            margin:20px 0;
+            background:linear-gradient(135deg, var(--primary) 0%, #00a0f0 100%);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+        .feedback-section{ margin:20px 0; }
+        .feedback-title{
+            font-size:1.3em;
+            color:#495057;
+            margin-bottom:10px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .feedback-list{
+            list-style:none;
+            padding-left:20px;
+        }
+        .feedback-list li{
+            margin:10px 0;
+            color:#6c757d;
+        }
+        .feedback-list li::before{
+            content:'✓ ';
+            color:#28a745;
+            font-weight:bold;
+            margin-right:5px;
+        }
+        .feedback-list.improvements li::before{
+            content:'• ';
+            color:#ffc107;
+        }
+
+        .stats-list{ list-style:none; padding-left:0; margin:0; }
+        .stat-line{
+            margin:8px 0;
+            padding:10px 12px;
+            border-radius:10px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            color:#495057;
+            background:#ffffff;
+            border:1px solid #e9ecef;
+        }
+        .stat-line .label{ display:flex; align-items:center; gap:8px; font-weight:600; }
+        .stat-line .value{ font-weight:700; }
+
+        .stat-line.failed{
+            background:rgba(220,53,69,0.10);
+            border-color:#dc3545;
+            color:#b02a37;
+            box-shadow:0 0 0 3px rgba(220,53,69,0.08) inset;
+        }
+        .stat-line.failed .label::before{ content:'⚠️'; }
+        .stat-line.passed{
+            background:rgba(40,167,69,0.08);
+            border-color:#28a745;
+            color:#1f7a3a;
+        }
+        .stat-line.passed .label::before{ content:'✅'; }
+
+        .restart-btn{
+            background:var(--primary);
+            color:white;
+            border:none;
+            padding:15px 40px;
+            border-radius:30px;
+            font-size:1.1em;
+            cursor:pointer;
+            display:block;
+            margin:30px auto;
+            transition:transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .restart-btn:hover{
+            transform:scale(1.05);
+            box-shadow:0 10px 30px rgba(0,83,147,0.3);
+        }
+
+        @media (max-width:600px){
+            .header h1{ font-size:1.8em; }
+            .day-indicator { 
+                position: static;
+                margin-top: 15px;
+                display: inline-block;
+            }
+            .stats-bar{ flex-wrap:wrap; }
+            .stat{ flex:1 1 45%; margin-bottom:10px; }
+            .day-dots { 
+                gap: 8px;
+                padding: 10px;
+            }
+            .day-dot-circle {
+                width: 25px;
+                height: 25px;
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🎯 BPO Leader Challenge</h1>
+            <div class="subtitle">Master the Art of Time Management</div>
+            <div class="day-indicator">
+                <div class="day-label">Day</div>
+                <div class="day-name" id="current-day">Monday</div>
+            </div>
+        </div>
+
+        <div class="week-progress">
+            <div class="week-progress-fill" id="week-progress" style="width:20%"></div>
+        </div>
+
+        <div class="day-dots">
+            <div class="day-dot" id="day-mon">
+                <div class="day-dot-circle">M</div>
+                <div class="day-dot-label">MON</div>
+            </div>
+            <div class="day-dot" id="day-tue">
+                <div class="day-dot-circle">T</div>
+                <div class="day-dot-label">TUE</div>
+            </div>
+            <div class="day-dot" id="day-wed">
+                <div class="day-dot-circle">W</div>
+                <div class="day-dot-label">WED</div>
+            </div>
+            <div class="day-dot" id="day-thu">
+                <div class="day-dot-circle">T</div>
+                <div class="day-dot-label">THU</div>
+            </div>
+            <div class="day-dot" id="day-fri">
+                <div class="day-dot-circle">F</div>
+                <div class="day-dot-label">FRI</div>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-icon">😊</div>
+                <div class="stat-label">Team Morale</div>
+                <div class="stat-value"><span id="morale">75</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill morale-fill" id="morale-bar" style="width:75%"></div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-label">Time Left</div>
+                <div class="stat-value"><span id="time">40</span> hrs</div>
+                <div class="progress-bar">
+                    <div class="progress-fill time-fill" id="time-bar" style="width:100%"></div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-icon">🧘</div>
+                <div class="stat-label">Wellness</div>
+                <div class="stat-value"><span id="wellness">70</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill wellness-fill" id="wellness-bar" style="width:70%"></div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">Projects</div>
+                <div class="stat-value"><span id="project">0</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill project-fill" id="project-bar" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scene-container" id="scene-container"></div>
+    </div>
+
+    <script>
+        // Game State
+        const gameState = {
+            currentScene: 'intro',
+            currentDay: 'Monday',
+            dayProgress: 1,
+            stats: {
+                morale: 75,
+                timeLeft: 40,
+                wellness: 70,
+                projectCompletion: 0
+            },
+            maxTime: 40,
+            decisions: [],
+            characters: {
+                boss: { name: 'Director Martinez', emoji: '👔' },
+                mentor: { name: 'Sarah Chen', emoji: '🧙‍♀️' },
+                employee1: { name: 'Alex Thompson', emoji: '👨‍💻', morale: 70 },
+                employee2: { name: 'Maya Patel', emoji: '👩‍💼', morale: 75 },
+                employee3: { name: 'James Wilson', emoji: '🧑‍💻', morale: 65 }
+            }
+        };
+
+        // Scene to Day mapping
+        const sceneDayMap = {
+            // Monday
+            'intro': { day: 'Monday', dayNum: 1 },
+            'teamMeeting': { day: 'Monday', dayNum: 1 },
+            'straightToWork': { day: 'Monday', dayNum: 1 },
+            'planning': { day: 'Monday', dayNum: 1 },
+            'mondayEmails': { day: 'Monday', dayNum: 1 },
+            'mondayOneOnOnes': { day: 'Monday', dayNum: 1 },
+            
+            // Tuesday
+            'crisisCall': { day: 'Tuesday', dayNum: 2 },
+            'tuesdayQA': { day: 'Tuesday', dayNum: 2 },
+            'tuesdayHandoff': { day: 'Tuesday', dayNum: 2 },
+            
+            // Wednesday
+            'midweekCheck': { day: 'Wednesday', dayNum: 3 },
+            'mentorAdvice': { day: 'Wednesday', dayNum: 3 },
+            'extensionRequest': { day: 'Wednesday', dayNum: 3 },
+            'wednesdayData': { day: 'Wednesday', dayNum: 3 },
+            'wednesdayBossVisit': { day: 'Wednesday', dayNum: 3 },
+            
+            // Thursday
+            'overtimeDecision': { day: 'Thursday', dayNum: 4 },
+            'thursdayMeetings': { day: 'Thursday', dayNum: 4 },
+            'thursdayAutomation': { day: 'Thursday', dayNum: 4 },
+            
+            // Friday
+            'finalPush': { day: 'Friday', dayNum: 5 },
+            'fridayDryRun': { day: 'Friday', dayNum: 5 },
+            'presentation': { day: 'Friday', dayNum: 5 },
+            
+            // Ending
+            'ending': { day: 'Review', dayNum: 6 }
+        };
+
+        // Scenes Database
+        const scenes = {
+            // MONDAY
+            intro: {
+                title: "Welcome to Your First Week as Team Lead!",
+                image: "🏢",
+                description: "You've just been promoted to Team Lead at GlobalTech BPO. Your team handles customer service for multiple international clients. It's Monday morning, and you have a challenging week ahead with a major project deadline on Friday.",
+                dialogue: {
+                    character: 'mentor',
+                    text: "Congratulations on your promotion! Balance team needs, project demands, and your own well-being. Make wise choices!"
+                },
+                choices: [
+                    { text: "Start with a team meeting to set expectations", next: 'teamMeeting', effects: { timeLeft: -2, morale: 5, wellness: 0, projectCompletion: 10 } },
+                    { text: "Jump straight into work to maximize productivity", next: 'straightToWork', effects: { timeLeft: -1, morale: -5, wellness: -5, projectCompletion: 15 } },
+                    { text: "Review emails and plan your week first", next: 'planning', effects: { timeLeft: -1, morale: 0, wellness: 5, projectCompletion: 5 } }
+                ]
+            },
+
+            teamMeeting: {
+                title: "Team Meeting in Progress",
+                image: "👥",
+                description: "You've gathered your team for a morning meeting. The atmosphere is positive, and everyone seems engaged.",
+                dialogue: {
+                    character: 'employee1',
+                    text: "Thanks for bringing us together! I have some concerns about the project timeline, but I'm ready to give my best."
+                },
+                choices: [
+                    { text: "Address concerns and create a detailed task distribution", next: 'mondayEmails', effects: { timeLeft: -3, morale: 10, wellness: 0, projectCompletion: 15 } },
+                    { text: "Keep it brief and assign tasks quickly", next: 'mondayEmails', effects: { timeLeft: -1, morale: 3, wellness: 0, projectCompletion: 10 } },
+                    { text: "Turn it into a brainstorming session", next: 'mondayEmails', effects: { timeLeft: -2, morale: 7, wellness: -3, projectCompletion: 8 } }
+                ]
+            },
+
+            straightToWork: {
+                title: "Diving Into the Deep End",
+                image: "💻",
+                description: "You've jumped straight into work. Your team seems confused about priorities, but work is getting done.",
+                dialogue: {
+                    character: 'employee2',
+                    text: "I'm not sure what to prioritize. Should I focus on the urgent tickets or the project deliverables?"
+                },
+                choices: [
+                    { text: "Take time to clarify priorities now", next: 'mondayEmails', effects: { timeLeft: -2, morale: 8, wellness: 0, projectCompletion: 12 } },
+                    { text: "Tell them to focus on the project only", next: 'mondayEmails', effects: { timeLeft: -1, morale: -3, wellness: -5, projectCompletion: 18 } },
+                    { text: "Let them decide based on their judgment", next: 'mondayEmails', effects: { timeLeft: 0, morale: 2, wellness: 3, projectCompletion: 8 } }
+                ]
+            },
+
+            planning: {
+                title: "Strategic Planning Session",
+                image: "📋",
+                description: "You're reviewing the week's requirements. You notice several conflicting priorities and tight deadlines.",
+                dialogue: {
+                    character: 'boss',
+                    text: "I see you're taking a strategic approach. Good! Remember, the client presentation on Friday is critical."
+                },
+                choices: [
+                    { text: "Create a detailed project plan and share with team", next: 'mondayEmails', effects: { timeLeft: -2, morale: 5, wellness: 5, projectCompletion: 20 } },
+                    { text: "Delegate planning to senior team members", next: 'mondayEmails', effects: { timeLeft: -1, morale: 3, wellness: 8, projectCompletion: 12 } },
+                    { text: "Focus only on the critical Friday deadline", next: 'mondayEmails', effects: { timeLeft: -1, morale: -2, wellness: -3, projectCompletion: 15 } }
+                ]
+            },
+
+            mondayEmails: {
+                title: "Inbox Avalanche",
+                image: "📧",
+                description: "Your inbox explodes with client emails—status requests, small change asks, and FYIs.",
+                dialogue: {
+                    character: 'employee2',
+                    text: "Client A just sent 30 emails with mixed priorities. How do you want to handle this?"
+                },
+                choices: [
+                    { text: "Triage with the 4D method (Do, Defer, Delegate, Delete) and tag priorities", next: 'mondayOneOnOnes', effects: { timeLeft: -1, morale: 3, wellness: 2, projectCompletion: 5 } },
+                    { text: "Batch for end-of-day and auto-acknowledge receipt", next: 'mondayOneOnOnes', effects: { timeLeft: 0, morale: 0, wellness: 5, projectCompletion: 0 } },
+                    { text: "Respond to everything right now to clear the deck", next: 'mondayOneOnOnes', effects: { timeLeft: -3, morale: -2, wellness: -5, projectCompletion: -2 } }
+                ]
+            },
+
+            mondayOneOnOnes: {
+                title: "1:1s or Deep Work?",
+                image: "🗓️",
+                description: "Two team members have 1:1s booked today. Keeping them supports growth, but deep work time is scarce.",
+                dialogue: {
+                    character: 'employee1',
+                    text: "Happy to keep our 1:1, but I know you're slammed. What works best?"
+                },
+                choices: [
+                    { text: "Keep both 30-min 1:1s—invest in people and clarify priorities", next: 'crisisCall', effects: { timeLeft: -1, morale: 8, wellness: 2, projectCompletion: 3 } },
+                    { text: "Reschedule to Wednesday and send written guidance now", next: 'crisisCall', effects: { timeLeft: 0, morale: -5, wellness: 0, projectCompletion: 5 } },
+                    { text: "Do 15-min check-ins this week; full 1:1s next week", next: 'crisisCall', effects: { timeLeft: -1, morale: 5, wellness: 1, projectCompletion: 2 } }
+                ]
+            },
+
+            // TUESDAY
+            crisisCall: {
+                title: "Urgent Client Escalation!",
+                image: "📞",
+                description: "Tuesday morning: A major client is furious about service delays. They're threatening to cancel their contract. Your boss wants immediate action.",
+                dialogue: {
+                    character: 'boss',
+                    text: "We have a crisis! The client wants answers NOW. What's your plan?"
+                },
+                choices: [
+                    { text: "Drop everything and handle it personally", next: 'tuesdayQA', effects: { timeLeft: -5, morale: -10, wellness: -15, projectCompletion: -5 } },
+                    { text: "Delegate to your best performer while you supervise", next: 'tuesdayQA', effects: { timeLeft: -3, morale: -5, wellness: -5, projectCompletion: 5 } },
+                    { text: "Form a crisis team and rotate responsibilities", next: 'tuesdayQA', effects: { timeLeft: -3, morale: 5, wellness: 0, projectCompletion: 3 } },
+                    { text: "Set boundaries: prep for 2 hours, then schedule the call", next: 'tuesdayQA', effects: { timeLeft: -2, morale: 3, wellness: 10, projectCompletion: 2 } }
+                ]
+            },
+
+            tuesdayQA: {
+                title: "QA Audit Surprise",
+                image: "🧐",
+                description: "Quality Assurance requests ticket samples and evidence of resolution times for an internal audit.",
+                dialogue: {
+                    character: 'boss',
+                    text: "We need to provide credible data without derailing delivery. What's your move?"
+                },
+                choices: [
+                    { text: "Assemble an evidence pack now", next: 'tuesdayHandoff', effects: { timeLeft: -2, morale: 0, wellness: -2, projectCompletion: 3 } },
+                    { text: "Negotiate to provide by EOD with a summary", next: 'tuesdayHandoff', effects: { timeLeft: -1, morale: 2, wellness: 3, projectCompletion: 1 } },
+                    { text: "Delegate to Maya with a clear checklist", next: 'tuesdayHandoff', effects: { timeLeft: 0, morale: 1, wellness: 1, projectCompletion: 2 } }
+                ]
+            },
+
+            tuesdayHandoff: {
+                title: "Shift Handoff",
+                image: "🔁",
+                description: "Night shift requests a thorough handover to maintain momentum overnight.",
+                dialogue: {
+                    character: 'employee3',
+                    text: "Can we get a clear handover doc? It helps avoid rework during the night."
+                },
+                choices: [
+                    { text: "Create a concise handover doc with priorities and owners", next: 'midweekCheck', effects: { timeLeft: -1, morale: 2, wellness: 0, projectCompletion: 6 } },
+                    { text: "Do a quick 10-minute sync call only", next: 'midweekCheck', effects: { timeLeft: -1, morale: 1, wellness: 2, projectCompletion: 2 } },
+                    { text: "Skip formal handoff—trust the team to pick it up", next: 'midweekCheck', effects: { timeLeft: 0, morale: -5, wellness: -3, projectCompletion: -5 } }
+                ]
+            },
+
+            // WEDNESDAY
+            midweekCheck: {
+                title: "Wednesday: Mid-Week Reality Check",
+                image: "📊",
+                description: "The project is behind schedule, and your team is showing signs of stress. Two team members have requested time off for personal matters.",
+                dialogue: {
+                    character: 'employee3',
+                    text: "Boss, I hate to ask, but I really need Friday afternoon off for a family emergency..."
+                },
+                choices: [
+                    { text: "Deny all time off until after the deadline", next: 'wednesdayData', effects: { timeLeft: 0, morale: -20, wellness: -10, projectCompletion: 10 } },
+                    { text: "Approve requests but ask for overtime from others", next: 'wednesdayData', effects: { timeLeft: -2, morale: 5, wellness: -10, projectCompletion: 5 } },
+                    { text: "Approve one request and coordinate coverage", next: 'wednesdayData', effects: { timeLeft: -3, morale: 10, wellness: 5, projectCompletion: 8 } },
+                    { text: "Call your mentor for advice first", next: 'mentorAdvice', effects: { timeLeft: -1, morale: 3, wellness: 8, projectCompletion: 5 } }
+                ]
+            },
+
+            mentorAdvice: {
+                title: "Wisdom from Your Mentor",
+                image: "🧙‍♀️",
+                description: "You've reached out to Sarah for guidance on balancing team needs with project demands.",
+                dialogue: {
+                    character: 'mentor',
+                    text: "Burning out your team for one deadline will cost you in the long run. What really needs to be in Friday's presentation?"
+                },
+                choices: [
+                    { text: "Reduce scope to essentials only", next: 'wednesdayData', effects: { timeLeft: -2, morale: 15, wellness: 10, projectCompletion: 15 } },
+                    { text: "Keep full scope but redistribute work smartly", next: 'wednesdayData', effects: { timeLeft: -3, morale: 5, wellness: 0, projectCompletion: 10 } },
+                    { text: "Request deadline extension from your boss", next: 'extensionRequest', effects: { timeLeft: -1, morale: 8, wellness: 15, projectCompletion: -10 } }
+                ]
+            },
+
+            extensionRequest: {
+                title: "Negotiating with Leadership",
+                image: "🤝",
+                description: "You're requesting a deadline extension. The atmosphere is tense.",
+                dialogue: {
+                    character: 'boss',
+                    text: "If you can guarantee exceptional quality with 2 extra days, I might consider it."
+                },
+                choices: [
+                    { text: "Accept the 2-day extension and commit to excellence", next: 'thursdayMeetings', effects: { timeLeft: 0, morale: 20, wellness: 20, projectCompletion: 25 } },
+                    { text: "Decline and push through with the original deadline", next: 'wednesdayData', effects: { timeLeft: 0, morale: -5, wellness: -10, projectCompletion: 15 } }
+                ]
+            },
+
+            wednesdayData: {
+                title: "Data Deep Dive",
+                image: "📈",
+                description: "You analyze metrics: backlog, handle time, escalations, and blockers. Where do you focus?",
+                dialogue: {
+                    character: 'mentor',
+                    text: "Pick the lever that gives the biggest lift without burning people out."
+                },
+                choices: [
+                    { text: "Target top 3 blockers and remove them", next: 'wednesdayBossVisit', effects: { timeLeft: -2, morale: 3, wellness: 0, projectCompletion: 12 } },
+                    { text: "Push for faster responses across the board", next: 'wednesdayBossVisit', effects: { timeLeft: -1, morale: -5, wellness: -3, projectCompletion: 8 } },
+                    { text: "Freeze new requests and focus on committed scope", next: 'wednesdayBossVisit', effects: { timeLeft: 0, morale: 2, wellness: 2, projectCompletion: 10 } }
+                ]
+            },
+
+            wednesdayBossVisit: {
+                title: "Boss Drop-By: Scope Creep",
+                image: "📎",
+                description: "Your boss asks to add a small 'quick win' to the presentation.",
+                dialogue: {
+                    character: 'boss',
+                    text: "Can we squeeze in a basic dashboard? It would impress the client."
+                },
+                choices: [
+                    { text: "Say no with clear rationale and protect scope", next: 'overtimeDecision', effects: { timeLeft: 0, morale: 3, wellness: 2, projectCompletion: 0 } },
+                    { text: "Agree without trade-offs—stretch the team", next: 'overtimeDecision', effects: { timeLeft: -2, morale: -6, wellness: -4, projectCompletion: 5 } },
+                    { text: "Offer a trade-off: add this, drop that", next: 'overtimeDecision', effects: { timeLeft: -1, morale: 1, wellness: 1, projectCompletion: 6 } }
+                ]
+            },
+
+            // THURSDAY
+            overtimeDecision: {
+                title: "Thursday: The Overtime Dilemma",
+                image: "🌙",
+                description: "The project needs more work. You're considering overtime or alternatives.",
+                dialogue: {
+                    character: 'employee1',
+                    text: "I can stay if needed, but I've already worked late twice this week."
+                },
+                choices: [
+                    { text: "Mandatory overtime for everyone", next: 'thursdayMeetings', effects: { timeLeft: -8, morale: -25, wellness: -20, projectCompletion: 30 } },
+                    { text: "Make overtime voluntary with incentives", next: 'thursdayMeetings', effects: { timeLeft: -6, morale: 5, wellness: -5, projectCompletion: 20 } },
+                    { text: "Work late yourself to cover the gap", next: 'thursdayMeetings', effects: { timeLeft: -10, morale: 10, wellness: -30, projectCompletion: 15 } },
+                    { text: "Optimize what you have and avoid overtime", next: 'thursdayMeetings', effects: { timeLeft: -2, morale: 15, wellness: 15, projectCompletion: 10 } }
+                ]
+            },
+
+            thursdayMeetings: {
+                title: "Meeting Audit",
+                image: "🧹",
+                description: "Your calendar is packed. Trim meetings to reclaim focus time?",
+                dialogue: {
+                    character: 'mentor',
+                    text: "Meetings multiply. What can you cancel, shorten, or move async?"
+                },
+                choices: [
+                    { text: "Cancel low-value meetings and send async updates", next: 'thursdayAutomation', effects: { timeLeft: 1, morale: 2, wellness: 3, projectCompletion: 3 } },
+                    { text: "Shorten recurring meetings by 50%", next: 'thursdayAutomation', effects: { timeLeft: 1, morale: 1, wellness: 2, projectCompletion: 2 } },
+                    { text: "Keep the schedule as-is for now", next: 'thursdayAutomation', effects: { timeLeft: 0, morale: 0, wellness: 0, projectCompletion: 0 } }
+                ]
+            },
+
+            thursdayAutomation: {
+                title: "Automation Quick Wins",
+                image: "🤖",
+                description: "Macro ideas could speed up responses. Do you invest time now?",
+                dialogue: {
+                    character: 'employee1',
+                    text: "If we build 2–3 macros, we'll clear tickets faster today."
+                },
+                choices: [
+                    { text: "Build 3 high-impact macros now", next: 'finalPush', effects: { timeLeft: -1, morale: 2, wellness: 1, projectCompletion: 8 } },
+                    { text: "Assign a junior to prototype, you review later", next: 'finalPush', effects: { timeLeft: -1, morale: 1, wellness: 1, projectCompletion: 4 } },
+                    { text: "Defer automation to next sprint", next: 'finalPush', effects: { timeLeft: 0, morale: 0, wellness: 0, projectCompletion: 0 } }
+                ]
+            },
+
+            // FRIDAY
+            finalPush: {
+                title: "Friday: The Final Push",
+                image: "🏁",
+                description: "It's presentation day. The deck and demo need final touches.",
+                dialogue: {
+                    character: 'employee2',
+                    text: "We're almost there. How do you want to handle the last stretch?"
+                },
+                choices: [
+                    { text: "All hands on deck—everyone contributes", next: 'fridayDryRun', effects: { timeLeft: -4, morale: 10, wellness: 0, projectCompletion: 20 } },
+                    { text: "Assign specific roles and trust your team", next: 'fridayDryRun', effects: { timeLeft: -3, morale: 15, wellness: 10, projectCompletion: 18 } },
+                    { text: "Take control and perfect everything yourself", next: 'fridayDryRun', effects: { timeLeft: -6, morale: -10, wellness: -15, projectCompletion: 15 } },
+                    { text: "Do a quick review and call it done", next: 'fridayDryRun', effects: { timeLeft: -1, morale: 5, wellness: 5, projectCompletion: 8 } }
+                ]
+            },
+
+            fridayDryRun: {
+                title: "Dry Run Decision",
+                image: "🎤",
+                description: "You have a window before the client call. Rehearse?",
+                dialogue: {
+                    character: 'employee2',
+                    text: "A quick run-through could catch last-minute glitches."
+                },
+                choices: [
+                    { text: "Do a full dry run with roles and timing", next: 'presentation', effects: { timeLeft: -1, morale: 3, wellness: 0, projectCompletion: 10 } },
+                    { text: "Spot-check the riskiest parts only", next: 'presentation', effects: { timeLeft: -1, morale: 1, wellness: 2, projectCompletion: 4 } },
+                    { text: "Skip the dry run to save time", next: 'presentation', effects: { timeLeft: 0, morale: -2, wellness: 1, projectCompletion: -5 } }
+                ]
+            },
+
+            presentation: {
+                title: "The Big Presentation",
+                image: "🎯",
+                description: "The client joins the call. Your team and boss are watching. This is your moment.",
+                dialogue: {
+                    character: 'boss',
+                    text: "Show them what your team accomplished this week."
+                },
+                choices: [
+                    { text: "Lead the presentation yourself", next: 'ending', effects: { timeLeft: -2, morale: -5, wellness: -5, projectCompletion: 5 } },
+                    { text: "Share the spotlight with your team", next: 'ending', effects: { timeLeft: -2, morale: 20, wellness: 10, projectCompletion: 10 } },
+                    { text: "Let your top performer take the lead", next: 'ending', effects: { timeLeft: -2, morale: 10, wellness: 5, projectCompletion: 5 } }
+                ]
+            },
+
+            // ENDING
+            ending: {
+                title: "Week in Review: Your Leadership Report",
+                image: "🏆",
+                description: "The week is over. Let's see how you performed as a leader.",
+                isEnding: true
+            }
+        };
+
+        // Update day indicator
+        function updateDayIndicator() {
+            const currentSceneDay = sceneDayMap[gameState.currentScene];
+            if (currentSceneDay) {
+                gameState.currentDay = currentSceneDay.day;
+                gameState.dayProgress = currentSceneDay.dayNum;
+                
+                // Update day display
+                document.getElementById('current-day').textContent = gameState.currentDay;
+                
+                // Update week progress bar
+                const progressPercent = (gameState.dayProgress / 5) * 100;
+                document.getElementById('week-progress').style.width = `${Math.min(100, progressPercent)}%`;
+                
+                // Update day dots
+                const dayIds = ['day-mon', 'day-tue', 'day-wed', 'day-thu', 'day-fri'];
+                dayIds.forEach((dayId, index) => {
+                    const dayElement = document.getElementById(dayId);
+                    dayElement.classList.remove('current', 'completed');
+                    
+                    if (index < gameState.dayProgress - 1) {
+                        dayElement.classList.add('completed');
+                    } else if (index === gameState.dayProgress - 1 && gameState.dayProgress <= 5) {
+                        dayElement.classList.add('current');
+                    }
+                });
+            }
+        }
+
+        // Game Functions
+        function updateStats(){
+            document.getElementById('morale').textContent = Math.round(gameState.stats.morale);
+            document.getElementById('time').textContent = Math.round(gameState.stats.timeLeft);
+            document.getElementById('wellness').textContent = Math.round(gameState.stats.wellness);
+            document.getElementById('project').textContent = Math.round(gameState.stats.projectCompletion);
+
+            document.getElementById('morale-bar').style.width = `${Math.min(100, Math.max(0, gameState.stats.morale))}%`;
+            document.getElementById('time-bar').style.width = `${Math.min(100, Math.max(0, (gameState.stats.timeLeft / gameState.maxTime) * 100))}%`;
+            document.getElementById('wellness-bar').style.width = `${Math.min(100, Math.max(0, gameState.stats.wellness))}%`;
+            document.getElementById('project-bar').style.width = `${Math.min(100, Math.max(0, gameState.stats.projectCompletion))}%`;
+
+            if (gameState.stats.morale <= 0 || gameState.stats.wellness <= 0){
+                gameState.currentScene = 'ending';
+                renderScene();
+            }
+        }
+
+        function applyEffects(effects){
+            gameState.stats.morale = Math.max(0, Math.min(100, gameState.stats.morale + effects.morale));
+            gameState.stats.timeLeft = Math.max(0, gameState.stats.timeLeft + effects.timeLeft);
+            gameState.stats.wellness = Math.max(0, Math.min(100, gameState.stats.wellness + effects.wellness));
+            gameState.stats.projectCompletion = Math.max(0, Math.min(100, gameState.stats.projectCompletion + effects.projectCompletion));
+            updateStats();
+        }
+
+        function makeChoice(index){
+            const current = scenes[gameState.currentScene];
+            const choice = current.choices[index];
+
+            gameState.decisions.push({ scene: gameState.currentScene, choice: choice.text, effects: choice.effects });
+            applyEffects(choice.effects);
+            gameState.currentScene = choice.next;
+            updateDayIndicator();
+            renderScene();
+        }
+
+        function calculateGrade(){
+            const score = (
+                gameState.stats.morale * 0.3 +
+                gameState.stats.wellness * 0.2 +
+                gameState.stats.projectCompletion * 0.4 +
+                (gameState.stats.timeLeft > 0 ? 10 : 0)
+            );
+            if (score >= 90) return 'A+';
+            if (score >= 80) return 'A';
+            if (score >= 70) return 'B+';
+            if (score >= 60) return 'B';
+            if (score >= 50) return 'C';
+            return 'D';
+        }
+
+        function generateFeedback(){
+            const strengths = [];
+            const improvements = [];
+
+            if (gameState.stats.morale >= 70){
+                strengths.push("Excellent team morale management - Your team trusts your leadership");
+            } else if (gameState.stats.morale >= 40){
+                improvements.push("Team morale needs attention - Consider more inclusive decision-making");
+            } else {
+                improvements.push("Critical: Team morale is dangerously low - Prioritize team well-being");
+            }
+
+            if (gameState.stats.wellness >= 60){
+                strengths.push("Good work-life balance - You set healthy boundaries");
+            } else if (gameState.stats.wellness >= 30){
+                improvements.push("Work-life balance needs improvement - Remember to delegate more");
+            } else {
+                improvements.push("Critical: Burnout risk - You can't lead effectively if you're exhausted");
+            }
+
+            if (gameState.stats.projectCompletion >= 80){
+                strengths.push("Outstanding project delivery - Goals were exceeded");
+            } else if (gameState.stats.projectCompletion >= 60){
+                strengths.push("Solid project completion - Key objectives were met");
+            } else if (gameState.stats.projectCompletion >= 40){
+                improvements.push("Project completion needs work - Focus on prioritization");
+            } else {
+                improvements.push("Critical: Project goals were not met - Review time management strategies");
+            }
+
+            if (gameState.stats.timeLeft > 10){
+                strengths.push("Excellent time management - You worked efficiently");
+            } else if (gameState.stats.timeLeft <= 0){
+                improvements.push("Time management needs improvement - You overcommitted resources");
+            }
+
+            const overtimeDecisions = gameState.decisions.filter(d => d.choice.toLowerCase().includes('overtime'));
+            if (overtimeDecisions.length > 0){
+                improvements.push("Consider alternatives to overtime - It's not always the answer");
+            }
+            const delegationDecisions = gameState.decisions.filter(d => d.choice.toLowerCase().includes('delegate'));
+            if (delegationDecisions.length >= 2){
+                strengths.push("Good delegation skills - You trust your team");
+            }
+
+            return { strengths, improvements };
+        }
+
+        function renderEnding(){
+            const grade = calculateGrade();
+            const feedback = generateFeedback();
+
+            const fails = {
+                morale: gameState.stats.morale < 50,
+                wellness: gameState.stats.wellness < 50,
+                project: gameState.stats.projectCompletion < 70,
+                time: gameState.stats.timeLeft <= 0
+            };
+
+            let gradeEmoji = '🏆';
+            if (grade.includes('A')) gradeEmoji = '🌟';
+            else if (grade.includes('B')) gradeEmoji = '👍';
+            else if (grade.includes('C')) gradeEmoji = '📈';
+            else gradeEmoji = '💪';
+
+            const endingHTML = `
+                <div class="scene-image">${gradeEmoji}</div>
+                <h2 class="scene-title">Final Performance Review</h2>
+
+                <div class="ending-summary">
+                    <div class="ending-grade">Grade: ${grade}</div>
+
+                    <div class="feedback-section">
+                        <h3 class="feedback-title"><span>📊</span><span>Final Statistics</span></h3>
+                        <ul class="stats-list">
+                            <li class="stat-line ${fails.morale ? 'failed' : 'passed'}">
+                                <span class="label">Team Morale</span>
+                                <span class="value">${Math.round(gameState.stats.morale)}%</span>
+                            </li>
+                            <li class="stat-line ${fails.wellness ? 'failed' : 'passed'}">
+                                <span class="label">Personal Wellness</span>
+                                <span class="value">${Math.round(gameState.stats.wellness)}%</span>
+                            </li>
+                            <li class="stat-line ${fails.project ? 'failed' : 'passed'}">
+                                <span class="label">Project Completion</span>
+                                <span class="value">${Math.round(gameState.stats.projectCompletion)}%</span>
+                            </li>
+                            <li class="stat-line ${fails.time ? 'failed' : 'passed'}">
+                                <span class="label">Time Efficiency</span>
+                                <span class="value">${gameState.stats.timeLeft > 0 ? gameState.stats.timeLeft + ' hrs left' : 'All time utilized'}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3 class="feedback-title"><span>✨</span><span>Your Strengths</span></h3>
+                        <ul class="feedback-list">
+                            ${feedback.strengths.map(s => `<li>${s}</li>`).join('')}
+                            ${feedback.strengths.length === 0 ? '<li>Keep working on building your leadership skills</li>' : ''}
+                        </ul>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3 class="feedback-title"><span>📚</span><span>Areas for Growth</span></h3>
+                        <ul class="feedback-list improvements">
+                            ${feedback.improvements.map(i => `<li>${i}</li>`).join('')}
+                            ${feedback.improvements.length === 0 ? '<li>Outstanding performance! Keep maintaining this balance</li>' : ''}
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="restart-btn" onclick="restartGame()">Play Again</button>
+            `;
+
+            document.getElementById('scene-container').innerHTML = endingHTML;
+        }
+
+        function renderScene(){
+            const sceneData = scenes[gameState.currentScene];
+
+            if (sceneData.isEnding){
+                renderEnding();
+                return;
+            }
+
+            let sceneHTML = `
+                <div class="scene-image">${sceneData.image}</div>
+                <h2 class="scene-title">${sceneData.title}</h2>
+                <p class="scene-description">${sceneData.description}</p>
+            `;
+
+            if (sceneData.dialogue){
+                const character = gameState.characters[sceneData.dialogue.character];
+                sceneHTML += `
+                    <div class="character-dialogue">
+                        <div class="character-name">${character.emoji} ${character.name}:</div>
+                        <div>${sceneData.dialogue.text}</div>
+                    </div>
+                `;
+            }
+
+            sceneHTML += '<div class="choices-container">';
+            sceneData.choices.forEach((choice, index) => {
+                sceneHTML += `
+                    <button class="choice-btn" onclick="makeChoice(${index})">
+                        <div>${choice.text}</div>
+                    </button>
+                `;
+            });
+            sceneHTML += '</div>';
+
+            document.getElementById('scene-container').innerHTML = sceneHTML;
+        }
+
+        function restartGame(){
+            gameState.currentScene = 'intro';
+            gameState.currentDay = 'Monday';
+            gameState.dayProgress = 1;
+            gameState.stats = { morale:75, timeLeft:40, wellness:70, projectCompletion:0 };
+            gameState.decisions = [];
+            updateStats();
+            updateDayIndicator();
+            renderScene();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            updateDayIndicator();
+            renderScene();
+        });
+    </script>
+</body>
+</html>
 
